@@ -20,7 +20,6 @@
             min-height: 100vh;
         }
 
-        /* TŁO PORTU JAK NA STRONIE GŁÓWNEJ */
         body::before {
             content: "";
             position: absolute;
@@ -47,7 +46,6 @@
             z-index: 1;
         }
 
-        /* HEADER & LOGO GRAFICZNE (ZMNIEJSZONE) */
         .header-logo {
             text-align: center;
             margin-bottom: 16px;
@@ -59,7 +57,7 @@
         }
 
         .logo-img {
-            height: 40px; /* Zmniejszone z 55px */
+            height: 40px;
             width: auto;
             display: block;
             margin: 0 auto;
@@ -71,7 +69,6 @@
             transform: scale(1.02);
         }
 
-        /* TOP NAVIGATION BAR */
         .top-bar {
             display: flex;
             justify-content: space-between;
@@ -114,7 +111,6 @@
 
         .claim-btn:hover { background-color: #dc2626; }
 
-        /* CAR HEADER */
         .car-header {
             display: flex;
             justify-content: space-between;
@@ -155,7 +151,6 @@
         .auction-badge.copart { background-color: #0053a0; color: #ffffff; }
         .auction-badge.iaai { background-color: #dc2626; color: #ffffff; }
 
-        /* TWO COLUMN LAYOUT */
         .details-layout {
             display: grid;
             grid-template-columns: 1.2fr 0.8fr;
@@ -167,7 +162,6 @@
             .details-layout { grid-template-columns: 1fr; }
         }
 
-        /* GALLERY SECTION */
         .gallery-section {
             display: flex;
             flex-direction: column;
@@ -237,7 +231,6 @@
         .thumb.active, .thumb:hover { border-color: #38bdf8; }
         .thumb img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* PRICE BOX & SPECS */
         .info-section {
             display: flex;
             flex-direction: column;
@@ -283,7 +276,6 @@
         .spec-value { font-size: 0.95rem; color: #cbd5e1; font-weight: 600; margin-top: 2px; }
         .highlight-green { color: #22c55e; }
 
-        /* VIN HISTORY SECTION */
         .history-section {
             background-color: #1e293b;
             border: 1px solid #334155;
@@ -327,7 +319,6 @@
         .history-table tr:last-child td { border-bottom: none; }
         .price-past { font-weight: 700; color: #38bdf8; }
 
-        /* MODAL POPUP STYLES */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -466,20 +457,17 @@
 
     <div class="container">
 
-        <!-- HEADER & LOGO -->
         <div class="header-logo">
             <a href="index.html" class="logo">
                 <img src="logo_2.png" alt="VINDOCTOR" class="logo-img">
             </a>
         </div>
 
-        <!-- TOP BAR (BACK + CLAIM LOT) -->
         <div class="top-bar">
             <a href="index.html" class="back-link">← Back to listings</a>
             <button class="claim-btn" onclick="openClaimModal()">Claim This Lot</button>
         </div>
 
-        <!-- CAR HEADER -->
         <div class="car-header">
             <div>
                 <h1 class="car-title-main" id="carTitle">2022 Ford Mustang GT</h1>
@@ -488,10 +476,8 @@
             <span class="auction-badge copart" id="carAuctionBadge">COPART</span>
         </div>
 
-        <!-- LAYOUT: GALLERY + SPECS -->
         <div class="details-layout">
 
-            <!-- GALLERY -->
             <div class="gallery-section">
                 <div class="main-image-container">
                     <button class="nav-arrow prev" onclick="prevImage()">❮</button>
@@ -502,7 +488,6 @@
                 <div class="thumbnails-grid" id="thumbsGrid"></div>
             </div>
 
-            <!-- PRICE & SPECS -->
             <div class="info-section">
                 
                 <div class="price-box">
@@ -539,7 +524,7 @@
                         </div>
                         <div class="spec-item">
                             <span class="spec-label">Odometer</span>
-                            <span class="spec-value">34,120 mi (ACTUAL)</span>
+                            <span class="spec-value" id="specOdometer">18,400 mi (ACTUAL)</span>
                         </div>
                         <div class="spec-item">
                             <span class="spec-label">Transmission</span>
@@ -555,7 +540,6 @@
             </div>
         </div>
 
-        <!-- VIN SALES HISTORY -->
         <div class="history-section">
             <div class="history-title">
                 🕒 Sales History (VIN History)
@@ -573,12 +557,12 @@
                         <th>Final Price</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="historyTableBody">
                     <tr>
                         <td>05/12/2026</td>
                         <td>COPART</td>
                         <td>FL - TAMPA SOUTH</td>
-                        <td>34,118 mi</td>
+                        <td>18,390 mi</td>
                         <td>Not Sold (Reserve Not Met)</td>
                         <td class="price-past">$12,800 USD</td>
                     </tr>
@@ -586,7 +570,7 @@
                         <td>01/10/2026</td>
                         <td>IAAI</td>
                         <td>FL - ORLANDO</td>
-                        <td>34,100 mi</td>
+                        <td>18,100 mi</td>
                         <td>Sold</td>
                         <td class="price-past">$9,500 USD</td>
                     </tr>
@@ -596,7 +580,6 @@
 
     </div>
 
-    <!-- CLAIM POPUP MODAL -->
     <div class="modal-overlay" id="claimModal" onclick="handleOverlayClick(event)">
         <div class="modal-content">
             <div class="modal-text">
@@ -623,7 +606,6 @@
         </div>
     </div>
 
-    <!-- SCRIPT -->
     <script>
         const carDatabase = [
             {
@@ -636,6 +618,7 @@
                 status: "Run & Drive",
                 damage: "Front End",
                 document: "Clean Title",
+                odometer: "18,400 mi",
                 seller: "Progressive Ins.",
                 images: [
                     "https://images.unsplash.com/photo-1584345604476-8ec5e12e42dd?auto=format&fit=crop&w=1000&q=80",
@@ -653,6 +636,7 @@
                 status: "Stationary",
                 damage: "Side / Rear",
                 document: "Salvage Cert.",
+                odometer: "24,100 mi",
                 seller: "State Farm Ins.",
                 images: [
                     "https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=1000&q=80"
@@ -668,9 +652,106 @@
                 status: "Run & Drive",
                 damage: "Hail",
                 document: "Clean Title",
+                odometer: "9,800 mi",
                 seller: "Geico Insurance",
                 images: [
                     "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=1000&q=80"
+                ]
+            },
+            {
+                vin: "WP0AB2A91LS123987",
+                title: "2020 Porsche 911 Carrera S",
+                auction: "iaai",
+                price: "$45,000 USD",
+                location: "FL - MIAMI",
+                date: "07/29/2026",
+                status: "Run & Drive",
+                damage: "Rear End",
+                document: "Clean Title",
+                odometer: "31,200 mi",
+                seller: "Allstate Ins.",
+                images: [
+                    "https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&w=1000&q=80"
+                ]
+            },
+            {
+                vin: "1G1YB2D45M5987654",
+                title: "2022 Chevrolet Corvette C8",
+                auction: "copart",
+                price: "$31,200 USD",
+                location: "GA - ATLANTA",
+                date: "07/30/2026",
+                status: "Starts",
+                damage: "Water / Flood",
+                document: "Flood Salvage",
+                odometer: "12,000 mi",
+                seller: "Farmers Ins.",
+                images: [
+                    "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=1000&q=80"
+                ]
+            },
+            {
+                vin: "WUAZZZF23MN112233",
+                title: "2021 Audi RS6 Avant",
+                auction: "iaai",
+                price: "$39,800 USD",
+                location: "NY - NEW YORK",
+                date: "07/31/2026",
+                status: "Run & Drive",
+                damage: "Side Damage",
+                document: "Clean Title",
+                odometer: "28,900 mi",
+                seller: "Liberty Mutual",
+                images: [
+                    "https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?auto=format&fit=crop&w=1000&q=80"
+                ]
+            },
+            {
+                vin: "1C4HJXFN2LW887766",
+                title: "2020 Jeep Wrangler Rubicon",
+                auction: "copart",
+                price: "$16,500 USD",
+                location: "CO - DENVER",
+                date: "08/01/2026",
+                status: "Run & Drive",
+                damage: "Rollover",
+                document: "Salvage Title",
+                odometer: "42,500 mi",
+                seller: "USAA Insurance",
+                images: [
+                    "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=1000&q=80"
+                ]
+            },
+            {
+                vin: "WDDYJ8DA4KA334455",
+                title: "2019 Mercedes-AMG GT R",
+                auction: "iaai",
+                price: "$52,000 USD",
+                location: "IL - CHICAGO",
+                date: "08/02/2026",
+                status: "Stationary",
+                damage: "Front & Side",
+                document: "Certificate of Destruction",
+                odometer: "19,100 mi",
+                seller: "Nationwide Ins.",
+                images: [
+                    "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=1000&q=80"
+                ]
+            },
+            {
+                vin: "5YJSA1E20MF991122",
+                title: "2022 Tesla Model S Plaid",
+                auction: "copart",
+                price: "$34,900 USD",
+                location: "NV - LAS VEGAS",
+                date: "08/03/2026",
+                status: "Run & Drive",
+                damage: "Rear End",
+                document: "Clean Title",
+                odometer: "15,300 mi",
+                seller: "Travelers Ins.",
+                images: [
+                    "https://images.unsplash.com/photo-1560958089-b8a1929cea89?auto=format&fit=crop&w=1000&q=80"
                 ]
             }
         ];
@@ -698,6 +779,7 @@
             document.getElementById('specStatus').innerText = car.status;
             document.getElementById('specDamage').innerText = car.damage;
             document.getElementById('specDoc').innerText = car.document;
+            document.getElementById('specOdometer').innerText = `${car.odometer} (ACTUAL)`;
             document.getElementById('specSeller').innerText = car.seller;
 
             currentCarImages = car.images;
@@ -732,7 +814,6 @@
             renderGallery();
         }
 
-        /* MODAL LOGIC */
         function openClaimModal() {
             document.getElementById('claimModal').classList.add('active');
             document.getElementById('acceptCheckbox').checked = false;
@@ -760,7 +841,6 @@
             closeClaimModal();
         }
 
-        /* ESCAPE KEY & OVERLAY CLICK TO CLOSE */
         document.addEventListener('keydown', function(event) {
             if (event.key === 'Escape') {
                 closeClaimModal();
