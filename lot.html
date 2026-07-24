@@ -190,13 +190,14 @@
             object-fit: cover;
         }
 
+        /* MNIEJSZY I BARDZIEJ PRZEZROCZYSTY ZNAK WODNY */
         .watermark {
             position: absolute;
-            bottom: 12px;
+            bottom: 10px;
             right: 12px;
-            height: 32px;
+            height: 22px; /* Zmniejszono z 32px */
             width: auto;
-            opacity: 0.7;
+            opacity: 0.35; /* Większa przezroczystość (wcześniej 0.7) */
             pointer-events: none;
             filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));
             z-index: 5;
@@ -250,7 +251,7 @@
 
         .thumb.active, .thumb:hover { border-color: #38bdf8; }
         .thumb img.thumb-car-img { width: 100%; height: 100%; object-fit: cover; }
-        .thumb .watermark { height: 14px; bottom: 4px; right: 4px; opacity: 0.5; }
+        .thumb .watermark { height: 10px; bottom: 3px; right: 3px; opacity: 0.25; }
 
         /* PRICE BOX & SPECS */
         .info-section {
@@ -655,7 +656,11 @@
                 document: "Clean Title",
                 odometer: "18,400 mi (ACTUAL)",
                 seller: "Progressive Ins.",
-                images: ["https://picsum.photos/id/1071/800/600", "https://picsum.photos/id/111/800/600"]
+                images: [
+                    "https://images.unsplash.com/photo-1584345604476-8ec5e12e42dd?w=1000&auto=format&fit=crop",
+                    "https://images.unsplash.com/photo-1547744152-14d9b5174031?w=1000&auto=format&fit=crop",
+                    "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=1000&auto=format&fit=crop"
+                ]
             },
             {
                 vin: "WBS83AY000CK99887",
@@ -669,7 +674,11 @@
                 document: "Salvage Cert.",
                 odometer: "24,100 mi (ACTUAL)",
                 seller: "State Farm Ins.",
-                images: ["https://picsum.photos/id/183/800/600"]
+                images: [
+                    "https://images.unsplash.com/photo-1555215695-3004980ad54e?w=1000&auto=format&fit=crop",
+                    "https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=1000&auto=format&fit=crop",
+                    "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=1000&auto=format&fit=crop"
+                ]
             },
             {
                 vin: "2C3CDABT8KH654321",
@@ -683,7 +692,11 @@
                 document: "Clean Title",
                 odometer: "9,800 mi (ACTUAL)",
                 seller: "Geico Insurance",
-                images: ["https://picsum.photos/id/133/800/600"]
+                images: [
+                    "https://images.unsplash.com/photo-1626668893632-6f3a4466d22f?w=1000&auto=format&fit=crop",
+                    "https://images.unsplash.com/photo-1612544408825-e5f742239f15?w=1000&auto=format&fit=crop",
+                    "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1000&auto=format&fit=crop"
+                ]
             },
             {
                 vin: "WP0AB2A91LS123987",
@@ -697,7 +710,11 @@
                 document: "Clean Title",
                 odometer: "31,200 mi (ACTUAL)",
                 seller: "Allstate Ins.",
-                images: ["https://picsum.photos/id/1072/800/600"]
+                images: [
+                    "https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?w=1000&auto=format&fit=crop",
+                    "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1000&auto=format&fit=crop",
+                    "https://images.unsplash.com/photo-1611821064430-0d4108492061?w=1000&auto=format&fit=crop"
+                ]
             },
             {
                 vin: "1G1YB2D45M5987654",
@@ -711,7 +728,11 @@
                 document: "Flood Salvage",
                 odometer: "12,000 mi (ACTUAL)",
                 seller: "Farmers Ins.",
-                images: ["https://picsum.photos/id/146/800/600"]
+                images: [
+                    "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=1000&auto=format&fit=crop",
+                    "https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=1000&auto=format&fit=crop",
+                    "https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?w=1000&auto=format&fit=crop"
+                ]
             },
             {
                 vin: "WUAZZZF23MN112233",
@@ -725,7 +746,11 @@
                 document: "Clean Title",
                 odometer: "28,900 mi (ACTUAL)",
                 seller: "Liberty Mutual",
-                images: ["https://picsum.photos/id/201/800/600"]
+                images: [
+                    "https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?w=1000&auto=format&fit=crop",
+                    "https://images.unsplash.com/photo-1610768764270-790fbec18178?w=1000&auto=format&fit=crop",
+                    "https://images.unsplash.com/photo-1606152421802-db97b9c7a11b?w=1000&auto=format&fit=crop"
+                ]
             },
             {
                 vin: "1C4HJXFN2LW887766",
@@ -739,7 +764,11 @@
                 document: "Salvage Title",
                 odometer: "42,500 mi (ACTUAL)",
                 seller: "USAA Insurance",
-                images: ["https://picsum.photos/id/250/800/600"]
+                images: [
+                    "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=1000&auto=format&fit=crop",
+                    "https://images.unsplash.com/photo-1506015391300-4802dc74de2e?w=1000&auto=format&fit=crop",
+                    "https://images.unsplash.com/photo-1541348263662-e082662d82da?w=1000&auto=format&fit=crop"
+                ]
             },
             {
                 vin: "WDDYJ8DA4KA334455",
@@ -753,7 +782,11 @@
                 document: "Certificate of Destruction",
                 odometer: "19,100 mi (ACTUAL)",
                 seller: "Nationwide Ins.",
-                images: ["https://picsum.photos/id/1070/800/600"]
+                images: [
+                    "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=1000&auto=format&fit=crop",
+                    "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=1000&auto=format&fit=crop",
+                    "https://images.unsplash.com/photo-1563720223185-11003d516935?w=1000&auto=format&fit=crop"
+                ]
             },
             {
                 vin: "5YJSA1E20MF991122",
@@ -767,7 +800,11 @@
                 document: "Clean Title",
                 odometer: "15,300 mi (ACTUAL)",
                 seller: "Travelers Ins.",
-                images: ["https://picsum.photos/id/184/800/600"]
+                images: [
+                    "https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=1000&auto=format&fit=crop",
+                    "https://images.unsplash.com/photo-1617788138017-80ad40651399?w=1000&auto=format&fit=crop",
+                    "https://images.unsplash.com/photo-1536700503339-1e4b06520771?w=1000&auto=format&fit=crop"
+                ]
             }
         ];
 
