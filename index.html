@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VINDOCTOR - VIN Search & Auction History</title>
+    <title>VINDOCTOR - US Auto Auctions Search</title>
     <style>
         * {
             box-sizing: border-box;
@@ -16,27 +16,47 @@
             background-color: #0f172a;
             color: #f8fafc;
             padding: 20px 20px 0 20px;
+            position: relative;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
 
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 600px;
+            background-image: url('https://images.unsplash.com/photo-1590497008432-598f04441de8?q=80&w=4091&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center top;
+            background-repeat: no-repeat;
+            opacity: 0.45;
+            filter: contrast(110%) brightness(90%);
+            -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 100%);
+            mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 100%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
+            position: relative;
+            z-index: 1;
             flex-grow: 1;
             width: 100%;
-            margin-bottom: 50px;
         }
 
         .header-logo {
             text-align: center;
-            margin-bottom: 30px;
-            margin-top: 10px;
+            margin-bottom: 20px;
         }
 
         .logo-img {
-            height: 55px;
+            height: 45px;
             width: auto;
             filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
             animation: logoPulse 5s infinite ease-in-out;
@@ -53,186 +73,316 @@
             }
         }
 
-        .search-section {
-            background-color: #1e293b;
-            padding: 35px;
+        .top-search-section {
+            background-color: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(56, 189, 248, 0.25);
             border-radius: 12px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
-            margin-bottom: 40px;
-            border: 1px solid #334155;
-            text-align: center;
-        }
-
-        .search-title {
-            font-size: 1.8rem;
-            margin-bottom: 10px;
-            font-weight: 700;
-        }
-
-        .search-subtitle {
-            color: #94a3b8;
+            padding: 20px;
             margin-bottom: 25px;
-            font-size: 0.95rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
-        .search-box {
+        .top-search-form {
             display: flex;
-            max-width: 700px;
-            margin: 0 auto;
             gap: 10px;
         }
 
-        .search-input {
-            flex: 1;
-            padding: 15px 20px;
+        .top-search-input {
+            flex-grow: 1;
+            padding: 14px 20px;
             border-radius: 8px;
-            border: 1px solid #475569;
-            background-color: #0f172a;
+            border: 1px solid #334155;
+            background-color: rgba(15, 23, 42, 0.9);
             color: #fff;
             font-size: 1rem;
             outline: none;
-            transition: border-color 0.2s;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
 
-        .search-input:focus {
+        .top-search-input:focus {
+            border-color: #38bdf8;
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+        }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 25px;
+            align-items: start;
+            margin-bottom: 50px;
+        }
+
+        .sidebar-filters {
+            background-color: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(12px);
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 20px;
+            position: sticky;
+            top: 20px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        }
+
+        .filter-title {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 18px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #334155;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 16px;
+        }
+
+        .filter-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #94a3b8;
+            font-weight: 700;
+        }
+
+        .filter-select, .filter-input-range {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 6px;
+            border: 1px solid #334155;
+            background-color: #0f172a;
+            color: #e2e8f0;
+            font-size: 0.85rem;
+            outline: none;
+        }
+
+        .filter-select:focus, .filter-input-range:focus {
             border-color: #38bdf8;
         }
 
-        .search-btn {
-            padding: 15px 30px;
-            background-color: #0284c7;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-weight: 700;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: background-color 0.2s;
+        .range-group {
+            display: flex;
+            gap: 8px;
         }
 
-        .search-btn:hover {
-            background-color: #0369a1;
-        }
-
-        .results-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-            gap: 25px;
-        }
-
-        .card {
-            background-color: #1e293b;
-            border-radius: 12px;
-            overflow: hidden;
-            border: 1px solid #334155;
-            transition: transform 0.2s, box-shadow 0.2s;
+        .sidebar-actions {
             display: flex;
             flex-direction: column;
-            text-decoration: none;
-            color: inherit;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #334155;
         }
 
-        .card:hover {
+        .btn {
+            padding: 11px 16px;
+            border-radius: 6px;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            font-size: 0.85rem;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .btn-primary {
+            background-color: #38bdf8;
+            color: #0f172a;
+            box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
+        }
+
+        .btn-secondary {
+            background-color: #334155;
+            color: #cbd5e1;
+        }
+
+        .car-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .car-tile {
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .car-tile.hidden {
+            display: none !important;
+        }
+
+        .car-tile:hover {
             transform: translateY(-4px);
-            box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.6);
             border-color: #475569;
         }
 
-        .card-image-container {
+        .card-image-wrapper {
             position: relative;
             width: 100%;
-            height: 200px;
+            height: 190px;
             background-color: #0f172a;
+            display: block;
+            overflow: hidden;
         }
 
         .card-image {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .card-image-wrapper:hover .card-image {
+            transform: scale(1.05);
         }
 
         .auction-badge {
             position: absolute;
-            top: 12px;
-            right: 12px;
-            padding: 4px 10px;
-            border-radius: 4px;
-            font-size: 0.75rem;
+            top: 10px;
+            right: 10px;
+            padding: 5px 10px;
+            border-radius: 6px;
             font-weight: 800;
+            font-size: 0.7rem;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            z-index: 2;
         }
 
-        .copart { background-color: #0053a0; color: #fff; }
-        .iaai { background-color: #dc2626; color: #fff; }
+        .auction-badge.copart { background-color: #0053a0; color: #ffffff; }
+        .auction-badge.iaai { background-color: #dc2626; color: #ffffff; }
 
         .card-body {
-            padding: 20px;
+            padding: 16px;
             display: flex;
             flex-direction: column;
             flex-grow: 1;
         }
 
-        .card-title {
-            font-size: 1.2rem;
+        .car-title {
+            font-size: 1.15rem;
             font-weight: 700;
-            margin-bottom: 6px;
-            color: #f8fafc;
+            color: #ffffff;
+            margin-bottom: 2px;
         }
 
-        .card-vin {
-            font-size: 0.85rem;
-            color: #38bdf8;
+        .vin-number {
+            font-size: 0.8rem;
+            color: #94a3b8;
             font-family: monospace;
-            margin-bottom: 15px;
-            background-color: #0f172a;
-            padding: 4px 8px;
-            border-radius: 4px;
-            display: inline-block;
-            align-self: flex-start;
+            margin-bottom: 14px;
         }
 
-        .card-details {
+        .details-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            font-size: 0.85rem;
-            color: #94a3b8;
-            margin-bottom: 20px;
+            gap: 8px 10px;
+            padding-top: 10px;
+            border-top: 1px solid #334155;
+            margin-bottom: 14px;
         }
 
-        .card-details span {
-            display: block;
+        .detail-item {
+            display: flex;
+            flex-direction: column;
         }
 
-        .card-details strong {
-            color: #e2e8f0;
+        .detail-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        .detail-value {
+            font-size: 0.8rem;
+            color: #cbd5e1;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .status-run-drive {
+            color: #22c55e;
+            font-weight: 600;
         }
 
         .card-footer {
             margin-top: auto;
-            padding-top: 15px;
-            border-top: 1px solid #334155;
+            background-color: #0f172a;
+            padding: 10px 14px;
+            border-radius: 8px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .price {
-            font-size: 1.25rem;
+        .price-box-inner {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .price-label {
+            font-size: 0.65rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .price-value {
+            font-size: 1.1rem;
             font-weight: 800;
             color: #38bdf8;
         }
 
-        .view-btn {
-            background-color: #334155;
-            color: #f8fafc;
-            padding: 8px 16px;
+        .view-lot-btn {
+            background-color: #38bdf8;
+            color: #0f172a;
+            text-decoration: none;
+            font-weight: 800;
+            font-size: 0.75rem;
+            padding: 8px 12px;
             border-radius: 6px;
-            font-size: 0.85rem;
-            font-weight: 600;
+            letter-spacing: 0.5px;
+            transition: background-color 0.2s, transform 0.1s;
         }
 
-        /* STOPKA */
+        .view-lot-btn:hover {
+            background-color: #7dd3fc;
+            transform: scale(1.02);
+        }
+
+        #noResults {
+            display: none;
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px;
+            background-color: #1e293b;
+            border-radius: 12px;
+            color: #94a3b8;
+        }
+
         .site-footer {
             background-color: #0b1120;
             border-top: 1px solid #1e293b;
@@ -243,7 +393,7 @@
         }
 
         .footer-container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -321,13 +471,18 @@
         }
 
         .footer-bottom {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             padding-top: 20px;
             border-top: 1px solid #1e293b;
             text-align: center;
             font-size: 0.8rem;
             color: #64748b;
+        }
+
+        @media (max-width: 900px) {
+            .main-layout { grid-template-columns: 1fr; }
+            .sidebar-filters { position: static; }
         }
     </style>
 </head>
@@ -340,151 +495,321 @@
             </a>
         </div>
 
-        <div class="search-section">
-            <h1 class="search-title">Vehicle History & Auction Search</h1>
-            <p class="search-subtitle">Search Copart & IAAI archive records by VIN or Lot Number</p>
-            
-            <form action="lot.html" method="GET" class="search-box">
-                <input type="text" name="vin" class="search-input" placeholder="Enter 17-digit VIN number..." required>
-                <button type="submit" class="search-btn">Search VIN</button>
+        <div class="top-search-section">
+            <form class="top-search-form" action="lot.html" method="GET">
+                <input type="text" name="vin" class="top-search-input" placeholder="Enter VIN number (e.g. 1FA6P8CF5M5123456)" required>
+                <button type="submit" class="btn btn-primary">Search VIN</button>
             </form>
         </div>
 
-        <div class="results-grid">
-            
-            <!-- Card 1 -->
-            <a href="lot.html?vin=1FA6P8CF5M5123456" class="card">
-                <div class="card-image-container">
-                    <img src="https://images.unsplash.com/photo-1584345604476-8ec5e12e42dd?auto=format&fit=crop&w=600&q=80" class="card-image" alt="Mustang">
-                    <span class="auction-badge copart">COPART</span>
-                </div>
-                <div class="card-body">
-                    <h2 class="card-title">2022 Ford Mustang GT</h2>
-                    <div class="card-vin">1FA6P8CF5M5123456</div>
-                    <div class="card-details">
-                        <span>Damage: <strong>Front End</strong></span>
-                        <span>Odometer: <strong>18,400 mi</strong></span>
-                        <span>Status: <strong>Run & Drive</strong></span>
-                        <span>Location: <strong>FL - TAMPA</strong></span>
-                    </div>
-                    <div class="card-footer">
-                        <div class="price">$14,200 USD</div>
-                        <span class="view-btn">View Lot →</span>
-                    </div>
-                </div>
-            </a>
+        <div class="main-layout">
 
-            <!-- Card 2 -->
-            <a href="lot.html?vin=WBS83AY000CK99887" class="card">
-                <div class="card-image-container">
-                    <img src="https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=600&q=80" class="card-image" alt="BMW M4">
-                    <span class="auction-badge iaai">IAAI</span>
+            <aside class="sidebar-filters">
+                <div class="filter-title">
+                    <span>Filters</span>
+                    <span style="font-size: 0.8rem; color: #38bdf8; cursor: pointer;" onclick="clearFilters()">Reset</span>
                 </div>
-                <div class="card-body">
-                    <h2 class="card-title">2021 BMW M4 Competition</h2>
-                    <div class="card-vin">WBS83AY000CK99887</div>
-                    <div class="card-details">
-                        <span>Damage: <strong>Side / Rear</strong></span>
-                        <span>Odometer: <strong>24,100 mi</strong></span>
-                        <span>Status: <strong>Stationary</strong></span>
-                        <span>Location: <strong>CA - LOS ANGELES</strong></span>
-                    </div>
-                    <div class="card-footer">
-                        <div class="price">$22,800 USD</div>
-                        <span class="view-btn">View Lot →</span>
-                    </div>
-                </div>
-            </a>
 
-            <!-- Card 3 -->
-            <a href="lot.html?vin=2C3CDABT8KH654321" class="card">
-                <div class="card-image-container">
-                    <img src="https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=600&q=80" class="card-image" alt="Challenger">
-                    <span class="auction-badge copart">COPART</span>
+                <div class="filter-group">
+                    <label class="filter-label">Auction House</label>
+                    <select class="filter-select" id="filterAuction">
+                        <option value="">All (Copart & IAAI)</option>
+                        <option value="copart">Copart</option>
+                        <option value="iaai">IAAI</option>
+                    </select>
                 </div>
-                <div class="card-body">
-                    <h2 class="card-title">2023 Dodge Challenger R/T</h2>
-                    <div class="card-vin">2C3CDABT8KH654321</div>
-                    <div class="card-details">
-                        <span>Damage: <strong>Hail</strong></span>
-                        <span>Odometer: <strong>9,800 mi</strong></span>
-                        <span>Status: <strong>Run & Drive</strong></span>
-                        <span>Location: <strong>TX - DALLAS</strong></span>
-                    </div>
-                    <div class="card-footer">
-                        <div class="price">$18,500 USD</div>
-                        <span class="view-btn">View Lot →</span>
-                    </div>
-                </div>
-            </a>
 
-            <!-- Card 4 -->
-            <a href="lot.html?vin=WP0AB2A91LS123987" class="card">
-                <div class="card-image-container">
-                    <img src="https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&w=600&q=80" class="card-image" alt="Porsche">
-                    <span class="auction-badge iaai">IAAI</span>
+                <div class="filter-group">
+                    <label class="filter-label">Make</label>
+                    <select class="filter-select" id="filterMake" onchange="updateModelOptions()">
+                        <option value="">All Makes</option>
+                        <option value="ford">Ford</option>
+                        <option value="bmw">BMW</option>
+                        <option value="dodge">Dodge</option>
+                        <option value="porsche">Porsche</option>
+                        <option value="chevrolet">Chevrolet</option>
+                        <option value="audi">Audi</option>
+                        <option value="jeep">Jeep</option>
+                        <option value="mercedes">Mercedes-Benz</option>
+                        <option value="tesla">Tesla</option>
+                    </select>
                 </div>
-                <div class="card-body">
-                    <h2 class="card-title">2020 Porsche 911 Carrera S</h2>
-                    <div class="card-vin">WP0AB2A91LS123987</div>
-                    <div class="card-details">
-                        <span>Damage: <strong>Rear End</strong></span>
-                        <span>Odometer: <strong>31,200 mi</strong></span>
-                        <span>Status: <strong>Run & Drive</strong></span>
-                        <span>Location: <strong>FL - MIAMI</strong></span>
-                    </div>
-                    <div class="card-footer">
-                        <div class="price">$45,000 USD</div>
-                        <span class="view-btn">View Lot →</span>
-                    </div>
-                </div>
-            </a>
 
-            <!-- Card 5 -->
-            <a href="lot.html?vin=1G1YB2D45M5987654" class="card">
-                <div class="card-image-container">
-                    <img src="https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=600&q=80" class="card-image" alt="Corvette">
-                    <span class="auction-badge copart">COPART</span>
+                <div class="filter-group">
+                    <label class="filter-label">Model</label>
+                    <select class="filter-select" id="filterModel">
+                        <option value="">All Models</option>
+                    </select>
                 </div>
-                <div class="card-body">
-                    <h2 class="card-title">2022 Chevrolet Corvette C8</h2>
-                    <div class="card-vin">1G1YB2D45M5987654</div>
-                    <div class="card-details">
-                        <span>Damage: <strong>Water / Flood</strong></span>
-                        <span>Odometer: <strong>12,000 mi</strong></span>
-                        <span>Status: <strong>Starts</strong></span>
-                        <span>Location: <strong>GA - ATLANTA</strong></span>
-                    </div>
-                    <div class="card-footer">
-                        <div class="price">$31,200 USD</div>
-                        <span class="view-btn">View Lot →</span>
-                    </div>
-                </div>
-            </a>
 
-            <!-- Card 6 -->
-            <a href="lot.html?vin=WUAZZZF23MN112233" class="card">
-                <div class="card-image-container">
-                    <img src="https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?auto=format&fit=crop&w=600&q=80" class="card-image" alt="Audi RS6">
-                    <span class="auction-badge iaai">IAAI</span>
+                <div class="filter-group">
+                    <label class="filter-label">Primary Damage</label>
+                    <select class="filter-select" id="filterDamage">
+                        <option value="">All Damage Types</option>
+                        <option value="frontend">Front End</option>
+                        <option value="rearend">Rear End</option>
+                        <option value="side">Side / Side Damage</option>
+                        <option value="hail">Hail</option>
+                        <option value="flood">Water / Flood</option>
+                        <option value="rollover">Rollover</option>
+                    </select>
                 </div>
-                <div class="card-body">
-                    <h2 class="card-title">2021 Audi RS6 Avant</h2>
-                    <div class="card-vin">WUAZZZF23MN112233</div>
-                    <div class="card-details">
-                        <span>Damage: <strong>Side Damage</strong></span>
-                        <span>Odometer: <strong>28,900 mi</strong></span>
-                        <span>Status: <strong>Run & Drive</strong></span>
-                        <span>Location: <strong>NY - NEW YORK</strong></span>
-                    </div>
-                    <div class="card-footer">
-                        <div class="price">$39,800 USD</div>
-                        <span class="view-btn">View Lot →</span>
-                    </div>
-                </div>
-            </a>
 
+                <div class="filter-group">
+                    <label class="filter-label">Vehicle Status</label>
+                    <select class="filter-select" id="filterStatus">
+                        <option value="">All Statuses</option>
+                        <option value="run-drive">Run & Drive</option>
+                        <option value="starts">Starts</option>
+                        <option value="stationary">Stationary</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Year Range</label>
+                    <div class="range-group">
+                        <input type="number" class="filter-input-range" id="filterYearFrom" placeholder="From">
+                        <input type="number" class="filter-input-range" id="filterYearTo" placeholder="To">
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Mileage Range (mi)</label>
+                    <div class="range-group">
+                        <input type="number" class="filter-input-range" id="filterMileageFrom" placeholder="Min mi">
+                        <input type="number" class="filter-input-range" id="filterMileageTo" placeholder="Max mi">
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Location (State)</label>
+                    <select class="filter-select" id="filterState">
+                        <option value="">All States</option>
+                        <option value="FL">Florida (FL)</option>
+                        <option value="CA">California (CA)</option>
+                        <option value="TX">Texas (TX)</option>
+                        <option value="GA">Georgia (GA)</option>
+                        <option value="NY">New York (NY)</option>
+                        <option value="CO">Colorado (CO)</option>
+                        <option value="IL">Illinois (IL)</option>
+                        <option value="NV">Nevada (NV)</option>
+                    </select>
+                </div>
+
+                <div class="sidebar-actions">
+                    <button class="btn btn-primary" onclick="applyFilters()">Apply Filters</button>
+                    <button class="btn btn-secondary" onclick="clearFilters()">Clear All</button>
+                </div>
+            </aside>
+
+            <main class="car-grid" id="carGrid">
+
+                <div id="noResults">
+                    <h3>No vehicles match your search criteria.</h3>
+                    <p style="margin-top: 8px;">Try clearing filters to see all available cars.</p>
+                </div>
+
+                <!-- TILE 1 -->
+                <div class="car-tile" data-make="ford" data-model="mustang" data-year="2022" data-auction="copart" data-damage="frontend" data-status="run-drive" data-mileage="18400" data-state="FL">
+                    <a href="lot.html?vin=1FA6P8CF5M5123456" class="card-image-wrapper">
+                        <img src="https://images.unsplash.com/photo-1584345604476-8ec5e12e42dd?auto=format&fit=crop&w=600&q=80" alt="Ford Mustang GT" class="card-image">
+                        <span class="auction-badge copart">COPART</span>
+                    </a>
+                    <div class="card-body">
+                        <h2 class="car-title">2022 Ford Mustang GT</h2>
+                        <div class="vin-number">VIN: 1FA6P8CF5M5123456</div>
+                        <div class="details-grid">
+                            <div class="detail-item"><span class="detail-label">📍 Location</span><span class="detail-value">FL - TAMPA</span></div>
+                            <div class="detail-item"><span class="detail-label">🛣 Odometer</span><span class="detail-value">18,400 mi</span></div>
+                            <div class="detail-item"><span class="detail-label">🗝 Status</span><span class="detail-value status-run-drive">Run & Drive</span></div>
+                            <div class="detail-item"><span class="detail-label">🛠 Damage</span><span class="detail-value">Front End</span></div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="price-box-inner"><span class="price-label">Final Price:</span><span class="price-value">$14,200 USD</span></div>
+                            <a href="lot.html?vin=1FA6P8CF5M5123456" class="view-lot-btn">VIEW LOT</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TILE 2 -->
+                <div class="car-tile" data-make="bmw" data-model="m4" data-year="2021" data-auction="iaai" data-damage="side" data-status="stationary" data-mileage="24100" data-state="CA">
+                    <a href="lot.html?vin=WBS83AY000CK99887" class="card-image-wrapper">
+                        <img src="https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=600&q=80" alt="BMW M4" class="card-image">
+                        <span class="auction-badge iaai">IAAI</span>
+                    </a>
+                    <div class="card-body">
+                        <h2 class="car-title">2021 BMW M4 Competition</h2>
+                        <div class="vin-number">VIN: WBS83AY000CK99887</div>
+                        <div class="details-grid">
+                            <div class="detail-item"><span class="detail-label">📍 Location</span><span class="detail-value">CA - LOS ANGELES</span></div>
+                            <div class="detail-item"><span class="detail-label">🛣 Odometer</span><span class="detail-value">24,100 mi</span></div>
+                            <div class="detail-item"><span class="detail-label">🗝 Status</span><span class="detail-value">Stationary</span></div>
+                            <div class="detail-item"><span class="detail-label">🛠 Damage</span><span class="detail-value">Side / Rear</span></div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="price-box-inner"><span class="price-label">Final Price:</span><span class="price-value">$22,800 USD</span></div>
+                            <a href="lot.html?vin=WBS83AY000CK99887" class="view-lot-btn">VIEW LOT</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TILE 3 -->
+                <div class="car-tile" data-make="dodge" data-model="challenger" data-year="2023" data-auction="copart" data-damage="hail" data-status="run-drive" data-mileage="9800" data-state="TX">
+                    <a href="lot.html?vin=2C3CDABT8KH654321" class="card-image-wrapper">
+                        <img src="https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=600&q=80" alt="Dodge Challenger" class="card-image">
+                        <span class="auction-badge copart">COPART</span>
+                    </a>
+                    <div class="card-body">
+                        <h2 class="car-title">2023 Dodge Challenger R/T</h2>
+                        <div class="vin-number">VIN: 2C3CDABT8KH654321</div>
+                        <div class="details-grid">
+                            <div class="detail-item"><span class="detail-label">📍 Location</span><span class="detail-value">TX - DALLAS</span></div>
+                            <div class="detail-item"><span class="detail-label">🛣 Odometer</span><span class="detail-value">9,800 mi</span></div>
+                            <div class="detail-item"><span class="detail-label">🗝 Status</span><span class="detail-value status-run-drive">Run & Drive</span></div>
+                            <div class="detail-item"><span class="detail-label">🛠 Damage</span><span class="detail-value">Hail</span></div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="price-box-inner"><span class="price-label">Final Price:</span><span class="price-value">$18,500 USD</span></div>
+                            <a href="lot.html?vin=2C3CDABT8KH654321" class="view-lot-btn">VIEW LOT</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TILE 4 -->
+                <div class="car-tile" data-make="porsche" data-model="911" data-year="2020" data-auction="iaai" data-damage="rearend" data-status="run-drive" data-mileage="31200" data-state="FL">
+                    <a href="lot.html?vin=WP0AB2A91LS123987" class="card-image-wrapper">
+                        <img src="https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&w=600&q=80" alt="Porsche 911" class="card-image">
+                        <span class="auction-badge iaai">IAAI</span>
+                    </a>
+                    <div class="card-body">
+                        <h2 class="car-title">2020 Porsche 911 Carrera S</h2>
+                        <div class="vin-number">VIN: WP0AB2A91LS123987</div>
+                        <div class="details-grid">
+                            <div class="detail-item"><span class="detail-label">📍 Location</span><span class="detail-value">FL - MIAMI</span></div>
+                            <div class="detail-item"><span class="detail-label">🛣 Odometer</span><span class="detail-value">31,200 mi</span></div>
+                            <div class="detail-item"><span class="detail-label">🗝 Status</span><span class="detail-value status-run-drive">Run & Drive</span></div>
+                            <div class="detail-item"><span class="detail-label">🛠 Damage</span><span class="detail-value">Rear End</span></div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="price-box-inner"><span class="price-label">Final Price:</span><span class="price-value">$45,000 USD</span></div>
+                            <a href="lot.html?vin=WP0AB2A91LS123987" class="view-lot-btn">VIEW LOT</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TILE 5 -->
+                <div class="car-tile" data-make="chevrolet" data-model="corvette" data-year="2022" data-auction="copart" data-damage="flood" data-status="starts" data-mileage="12000" data-state="GA">
+                    <a href="lot.html?vin=1G1YB2D45M5987654" class="card-image-wrapper">
+                        <img src="https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=600&q=80" alt="Chevrolet Corvette C8" class="card-image">
+                        <span class="auction-badge copart">COPART</span>
+                    </a>
+                    <div class="card-body">
+                        <h2 class="car-title">2022 Chevrolet Corvette C8</h2>
+                        <div class="vin-number">VIN: 1G1YB2D45M5987654</div>
+                        <div class="details-grid">
+                            <div class="detail-item"><span class="detail-label">📍 Location</span><span class="detail-value">GA - ATLANTA</span></div>
+                            <div class="detail-item"><span class="detail-label">🛣 Odometer</span><span class="detail-value">12,000 mi</span></div>
+                            <div class="detail-item"><span class="detail-label">🗝 Status</span><span class="detail-value">Starts</span></div>
+                            <div class="detail-item"><span class="detail-label">🛠 Damage</span><span class="detail-value">Water / Flood</span></div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="price-box-inner"><span class="price-label">Final Price:</span><span class="price-value">$31,200 USD</span></div>
+                            <a href="lot.html?vin=1G1YB2D45M5987654" class="view-lot-btn">VIEW LOT</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TILE 6 -->
+                <div class="car-tile" data-make="audi" data-model="rs6" data-year="2021" data-auction="iaai" data-damage="side" data-status="run-drive" data-mileage="28900" data-state="NY">
+                    <a href="lot.html?vin=WUAZZZF23MN112233" class="card-image-wrapper">
+                        <img src="https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?auto=format&fit=crop&w=600&q=80" alt="Audi RS6 Avant" class="card-image">
+                        <span class="auction-badge iaai">IAAI</span>
+                    </a>
+                    <div class="card-body">
+                        <h2 class="car-title">2021 Audi RS6 Avant</h2>
+                        <div class="vin-number">VIN: WUAZZZF23MN112233</div>
+                        <div class="details-grid">
+                            <div class="detail-item"><span class="detail-label">📍 Location</span><span class="detail-value">NY - NEW YORK</span></div>
+                            <div class="detail-item"><span class="detail-label">🛣 Odometer</span><span class="detail-value">28,900 mi</span></div>
+                            <div class="detail-item"><span class="detail-label">🗝 Status</span><span class="detail-value status-run-drive">Run & Drive</span></div>
+                            <div class="detail-item"><span class="detail-label">🛠 Damage</span><span class="detail-value">Side Damage</span></div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="price-box-inner"><span class="price-label">Final Price:</span><span class="price-value">$39,800 USD</span></div>
+                            <a href="lot.html?vin=WUAZZZF23MN112233" class="view-lot-btn">VIEW LOT</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TILE 7 -->
+                <div class="car-tile" data-make="jeep" data-model="wrangler" data-year="2020" data-auction="copart" data-damage="rollover" data-status="run-drive" data-mileage="42500" data-state="CO">
+                    <a href="lot.html?vin=1C4HJXFN2LW887766" class="card-image-wrapper">
+                        <img src="https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=600&q=80" alt="Jeep Wrangler Rubicon" class="card-image">
+                        <span class="auction-badge copart">COPART</span>
+                    </a>
+                    <div class="card-body">
+                        <h2 class="car-title">2020 Jeep Wrangler Rubicon</h2>
+                        <div class="vin-number">VIN: 1C4HJXFN2LW887766</div>
+                        <div class="details-grid">
+                            <div class="detail-item"><span class="detail-label">📍 Location</span><span class="detail-value">CO - DENVER</span></div>
+                            <div class="detail-item"><span class="detail-label">🛣 Odometer</span><span class="detail-value">42,500 mi</span></div>
+                            <div class="detail-item"><span class="detail-label">🗝 Status</span><span class="detail-value status-run-drive">Run & Drive</span></div>
+                            <div class="detail-item"><span class="detail-label">🛠 Damage</span><span class="detail-value">Rollover</span></div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="price-box-inner"><span class="price-label">Final Price:</span><span class="price-value">$16,500 USD</span></div>
+                            <a href="lot.html?vin=1C4HJXFN2LW887766" class="view-lot-btn">VIEW LOT</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TILE 8 -->
+                <div class="car-tile" data-make="mercedes" data-model="gt" data-year="2019" data-auction="iaai" data-damage="frontend" data-status="stationary" data-mileage="19100" data-state="IL">
+                    <a href="lot.html?vin=WDDYJ8DA4KA334455" class="card-image-wrapper">
+                        <img src="https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=600&q=80" alt="Mercedes-AMG GT" class="card-image">
+                        <span class="auction-badge iaai">IAAI</span>
+                    </a>
+                    <div class="card-body">
+                        <h2 class="car-title">2019 Mercedes-AMG GT R</h2>
+                        <div class="vin-number">VIN: WDDYJ8DA4KA334455</div>
+                        <div class="details-grid">
+                            <div class="detail-item"><span class="detail-label">📍 Location</span><span class="detail-value">IL - CHICAGO</span></div>
+                            <div class="detail-item"><span class="detail-label">🛣 Odometer</span><span class="detail-value">19,100 mi</span></div>
+                            <div class="detail-item"><span class="detail-label">🗝 Status</span><span class="detail-value">Stationary</span></div>
+                            <div class="detail-item"><span class="detail-label">🛠 Damage</span><span class="detail-value">Front & Side</span></div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="price-box-inner"><span class="price-label">Final Price:</span><span class="price-value">$52,000 USD</span></div>
+                            <a href="lot.html?vin=WDDYJ8DA4KA334455" class="view-lot-btn">VIEW LOT</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TILE 9 -->
+                <div class="car-tile" data-make="tesla" data-model="models" data-year="2022" data-auction="copart" data-damage="rearend" data-status="run-drive" data-mileage="15300" data-state="NV">
+                    <a href="lot.html?vin=5YJSA1E20MF991122" class="card-image-wrapper">
+                        <img src="https://images.unsplash.com/photo-1560958089-b8a1929cea89?auto=format&fit=crop&w=600&q=80" alt="Tesla Model S Plaid" class="card-image">
+                        <span class="auction-badge copart">COPART</span>
+                    </a>
+                    <div class="card-body">
+                        <h2 class="car-title">2022 Tesla Model S Plaid</h2>
+                        <div class="vin-number">VIN: 5YJSA1E20MF991122</div>
+                        <div class="details-grid">
+                            <div class="detail-item"><span class="detail-label">📍 Location</span><span class="detail-value">NV - LAS VEGAS</span></div>
+                            <div class="detail-item"><span class="detail-label">🛣 Odometer</span><span class="detail-value">15,300 mi</span></div>
+                            <div class="detail-item"><span class="detail-label">🗝 Status</span><span class="detail-value status-run-drive">Run & Drive</span></div>
+                            <div class="detail-item"><span class="detail-label">🛠 Damage</span><span class="detail-value">Rear End</span></div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="price-box-inner"><span class="price-label">Final Price:</span><span class="price-value">$34,900 USD</span></div>
+                            <a href="lot.html?vin=5YJSA1E20MF991122" class="view-lot-btn">VIEW LOT</a>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
         </div>
+
     </div>
 
     <footer class="site-footer">
@@ -503,9 +828,9 @@
             <div class="footer-col">
                 <h4 class="footer-heading">Database Overview</h4>
                 <ul class="stats-list">
-                    <li>Lots: <span>9</span></li>
-                    <li>Copart Lots: <span>5</span></li>
-                    <li>IAAI Lots: <span>4</span></li>
+                    <li>Lots: <span id="statTotalLots">0</span></li>
+                    <li>Copart Lots: <span id="statCopartLots">0</span></li>
+                    <li>IAAI Lots: <span id="statIaaiLots">0</span></li>
                 </ul>
             </div>
 
@@ -524,5 +849,123 @@
         </div>
     </footer>
 
+    <script>
+        const modelsByMake = {
+            ford: [{ value: "mustang", text: "Mustang" }, { value: "f150", text: "F-150" }, { value: "explorer", text: "Explorer" }],
+            bmw: [{ value: "m4", text: "M4" }, { value: "m3", text: "M3" }, { value: "x5", text: "X5" }],
+            dodge: [{ value: "challenger", text: "Challenger" }, { value: "charger", text: "Charger" }],
+            porsche: [{ value: "911", text: "911" }, { value: "cayenne", text: "Cayenne" }],
+            chevrolet: [{ value: "corvette", text: "Corvette" }, { value: "camaro", text: "Camaro" }],
+            audi: [{ value: "rs6", text: "RS6" }, { value: "a4", text: "A4" }],
+            jeep: [{ value: "wrangler", text: "Wrangler" }, { value: "grandcherokee", text: "Grand Cherokee" }],
+            mercedes: [{ value: "gt", text: "AMG GT" }, { value: "cclass", text: "C-Class" }],
+            tesla: [{ value: "models", text: "Model S" }, { value: "modely", text: "Model Y" }]
+        };
+
+        function updateModelOptions() {
+            const makeSelect = document.getElementById('filterMake');
+            const modelSelect = document.getElementById('filterModel');
+            const selectedMake = makeSelect.value;
+
+            modelSelect.innerHTML = '<option value="">All Models</option>';
+
+            if (selectedMake && modelsByMake[selectedMake]) {
+                modelsByMake[selectedMake].forEach(model => {
+                    const opt = document.createElement('option');
+                    opt.value = model.value;
+                    opt.textContent = model.text;
+                    modelSelect.appendChild(opt);
+                });
+            }
+        }
+
+        function applyFilters() {
+            const auction = document.getElementById('filterAuction').value;
+            const make = document.getElementById('filterMake').value;
+            const model = document.getElementById('filterModel').value;
+            const damage = document.getElementById('filterDamage').value;
+            const status = document.getElementById('filterStatus').value;
+            const state = document.getElementById('filterState').value;
+
+            const yearFrom = parseInt(document.getElementById('filterYearFrom').value) || 0;
+            const yearTo = parseInt(document.getElementById('filterYearTo').value) || 9999;
+
+            const mileageFrom = parseInt(document.getElementById('filterMileageFrom').value) || 0;
+            const mileageTo = parseInt(document.getElementById('filterMileageTo').value) || 9999999;
+
+            const tiles = document.querySelectorAll('.car-tile');
+            let visibleCount = 0;
+
+            tiles.forEach(tile => {
+                const tileAuction = tile.getAttribute('data-auction');
+                const tileMake = tile.getAttribute('data-make');
+                const tileModel = tile.getAttribute('data-model');
+                const tileDamage = tile.getAttribute('data-damage');
+                const tileStatus = tile.getAttribute('data-status');
+                const tileState = tile.getAttribute('data-state');
+                const tileYear = parseInt(tile.getAttribute('data-year')) || 0;
+                const tileMileage = parseInt(tile.getAttribute('data-mileage')) || 0;
+
+                let match = true;
+
+                if (auction && tileAuction !== auction) match = false;
+                if (make && tileMake !== make) match = false;
+                if (model && tileModel !== model) match = false;
+                if (damage && tileDamage !== damage) match = false;
+                if (status && tileStatus !== status) match = false;
+                if (state && tileState !== state) match = false;
+
+                if (tileYear < yearFrom || tileYear > yearTo) match = false;
+                if (tileMileage < mileageFrom || tileMileage > mileageTo) match = false;
+
+                if (match) {
+                    tile.classList.remove('hidden');
+                    visibleCount++;
+                } else {
+                    tile.classList.add('hidden');
+                }
+            });
+
+            const noResults = document.getElementById('noResults');
+            if (visibleCount === 0) {
+                noResults.style.display = 'block';
+            } else {
+                noResults.style.display = 'none';
+            }
+        }
+
+        function clearFilters() {
+            document.getElementById('filterAuction').value = '';
+            document.getElementById('filterMake').value = '';
+            document.getElementById('filterDamage').value = '';
+            document.getElementById('filterStatus').value = '';
+            document.getElementById('filterState').value = '';
+            document.getElementById('filterYearFrom').value = '';
+            document.getElementById('filterYearTo').value = '';
+            document.getElementById('filterMileageFrom').value = '';
+            document.getElementById('filterMileageTo').value = '';
+            updateModelOptions();
+            applyFilters();
+        }
+
+        function calculateStats() {
+            const tiles = document.querySelectorAll('.car-tile');
+            let total = tiles.length;
+            let copart = 0;
+            let iaai = 0;
+
+            tiles.forEach(tile => {
+                const auc = tile.getAttribute('data-auction');
+                if (auc === 'copart') copart++;
+                if (auc === 'iaai') iaai++;
+            });
+
+            document.getElementById('statTotalLots').textContent = total;
+            document.getElementById('statCopartLots').textContent = copart;
+            document.getElementById('statIaaiLots').textContent = iaai;
+        }
+
+        window.addEventListener('DOMContentLoaded', calculateStats);
+    </script>
 </body>
 </html>
