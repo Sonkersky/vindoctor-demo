@@ -761,6 +761,113 @@
 
         function initPage() {
             const urlParams = new URLSearchParams(window.location.search);
+            // Pobieramy parametr 'vin' bez względu na wielkość liter
+            let vinParam = urlParams.get('vin') || urlParams.get('VIN');
+
+            let car = null;
+
+            if (vinParam) {
+                vinParam = vinParam.trim().toLowerCase();
+                car = carDatabase.find(c => c.vin.toLowerCase() === vinParam);
+            }
+
+            // Jeśli nie znaleziono po VIN, używamy pierwszego auta
+            if (!car) {
+                console.warn("Nie znaleziono auta o podanym VIN, ładowanie domyślnego.");
+                car = carDatabase[0];
+            }
+
+            document.title = `${car.title} - VINDOCTOR`;
+            document.getElementById('carTitle').innerText = car.title;
+            document.getElementById('carVin').innerText = `VIN: ${car.vin}`;
+            
+            const badge = document.getElementById('carAuctionBadge');
+            badge.innerText = car.auction.toUpperCase();
+            badge.className = `auction-badge ${car.auction}`;
+
+            document.getElementById('carPrice').innerText = car.price;
+            document.getElementById('specLocation').innerText = car.location;
+            document.getElementById('specDate').innerText = car.date;
+            document.getElementById('specStatus').innerText = car.status;
+            document.getElementById('specDamage').innerText = car.damage;
+            document.getElementById('specDoc').innerText = car.document;
+            document.getElementById('specOdometer').innerText = `${car.odometer} (ACTUAL)`;
+            document.getElementById('specSeller').innerText = car.seller;
+
+            currentCarImages = car.images;
+            currentIndex = 0;
+
+            renderGallery();
+        }
+
+        function renderGallery() {
+            document.getElementById('mainImage').src = currentCarImages[currentIndex];
+            const thumbsGrid = document.getElementById('thumbsGrid');
+            
+            thumbsGrid.innerHTML = currentCarImages.map((img, idx) => `
+                <div class="thumb ${idx === currentIndex ? 'active' : ''}" onclick="setImage(${idx})">
+                    <img src="${img}" alt="Photo ${idx + 1}">
+                </div>
+            `).join('');
+        }
+
+        function setImage(index) {
+            currentIndex = index;
+            renderGallery();
+        }
+
+        function nextImage() {
+            currentIndex = (currentIndex + 1) % currentCarImages.length;
+            renderGallery();
+        }
+
+        function prevImage() {
+            currentIndex = (currentIndex - 1 + currentCarImages.length) % currentCarImages.length;
+            renderGallery();
+        }
+
+        function openClaimModal() {
+            document.getElementById('claimModal').classList.add('active');
+            document.getElementById('acceptCheckbox').checked = false;
+            toggleNextButton();
+        }
+
+        function closeClaimModal() {
+            document.getElementById('claimModal').classList.remove('active');
+        }
+
+        function toggleNextButton() {
+            const checkbox = document.getElementById('acceptCheckbox');
+            const nextBtn = document.getElementById('nextStepBtn');
+            if (checkbox.checked) {
+                nextBtn.classList.remove('disabled');
+                nextBtn.removeAttribute('disabled');
+            } else {
+                nextBtn.classList.add('disabled');
+                nextBtn.setAttribute('disabled', 'true');
+            }
+        }
+
+        function handleNextStep() {
+            alert('Proceeding to the next step of claiming the lot.');
+            closeClaimModal();
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeClaimModal();
+            }
+        });
+
+        function handleOverlayClick(event) {
+            if (event.target.id === 'claimModal') {
+                closeClaimModal();
+
+        let currentCarImages = [];
+        let currentIndex = 0;
+
+        function initPage() {
+            const urlParams = new URLSearchParams(window.location.search);
             const vinParam = urlParams.get('vin');
 
             let car = carDatabase.find(c => c.vin === vinParam) || carDatabase[0];
