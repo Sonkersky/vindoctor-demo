@@ -20,25 +20,6 @@
             min-height: 100vh;
         }
 
-        body::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 600px;
-            background-image: url('https://images.unsplash.com/photo-1590497008432-598f04441de8?q=80&w=4091&auto=format&fit=crop');
-            background-size: cover;
-            background-position: center top;
-            background-repeat: no-repeat;
-            opacity: 0.45;
-            filter: contrast(110%) brightness(90%);
-            -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 100%);
-            mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 100%);
-            pointer-events: none;
-            z-index: 0;
-        }
-
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -51,22 +32,11 @@
             margin-bottom: 16px;
         }
 
-        .logo {
-            display: inline-block;
-            text-decoration: none;
-        }
-
         .logo-img {
             height: 40px;
             width: auto;
             display: block;
             margin: 0 auto;
-            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
-            transition: transform 0.2s ease;
-        }
-
-        .logo-img:hover {
-            transform: scale(1.02);
         }
 
         .top-bar {
@@ -74,10 +44,7 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 24px;
-            flex-wrap: wrap;
-            gap: 16px;
             background: rgba(30, 41, 59, 0.8);
-            backdrop-filter: blur(10px);
             padding: 12px 20px;
             border-radius: 10px;
             border: 1px solid #334155;
@@ -87,13 +54,7 @@
             color: #38bdf8;
             text-decoration: none;
             font-weight: 700;
-            font-size: 0.95rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
         }
-
-        .back-link:hover { text-decoration: underline; }
 
         .claim-btn {
             background-color: #ef4444;
@@ -102,29 +63,21 @@
             padding: 10px 18px;
             border-radius: 6px;
             font-weight: 700;
-            font-size: 0.85rem;
             cursor: pointer;
-            letter-spacing: 0.5px;
-            transition: background-color 0.2s;
             text-transform: uppercase;
         }
-
-        .claim-btn:hover { background-color: #dc2626; }
 
         .car-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
             margin-bottom: 24px;
-            gap: 16px;
-            flex-wrap: wrap;
         }
 
         .car-title-main {
             font-size: 2.2rem;
             font-weight: 800;
             color: #ffffff;
-            line-height: 1.1;
         }
 
         .vin-pill {
@@ -135,7 +88,6 @@
             border-radius: 6px;
             font-family: monospace;
             color: #94a3b8;
-            font-size: 0.95rem;
             margin-top: 8px;
         }
 
@@ -143,9 +95,7 @@
             padding: 8px 16px;
             border-radius: 6px;
             font-weight: 800;
-            font-size: 0.9rem;
             text-transform: uppercase;
-            letter-spacing: 1px;
         }
 
         .auction-badge.copart { background-color: #0053a0; color: #ffffff; }
@@ -168,6 +118,7 @@
             gap: 12px;
         }
 
+        /* STYL DLA POZYCJONOWANIA ZNAKU WODNEGO */
         .main-image-container {
             position: relative;
             width: 100%;
@@ -178,10 +129,22 @@
             border: 1px solid #334155;
         }
 
-        .main-image-container img {
+        .main-image-container img.main-car-img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+        }
+
+        .watermark {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            height: 32px;
+            width: auto;
+            opacity: 0.7;
+            pointer-events: none;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));
+            z-index: 5;
         }
 
         .nav-arrow {
@@ -199,14 +162,7 @@
             align-items: center;
             font-size: 1.2rem;
             cursor: pointer;
-            user-select: none;
-            transition: background-color 0.2s, border-color 0.2s;
-        }
-
-        .nav-arrow:hover {
-            background-color: rgba(56, 189, 248, 0.9);
-            color: #0f172a;
-            border-color: #38bdf8;
+            z-index: 6;
         }
 
         .nav-arrow.prev { left: 12px; }
@@ -219,17 +175,18 @@
         }
 
         .thumb {
+            position: relative;
             height: 80px;
             background-color: #1e293b;
             border-radius: 6px;
             overflow: hidden;
             border: 2px solid transparent;
             cursor: pointer;
-            transition: border-color 0.2s;
         }
 
         .thumb.active, .thumb:hover { border-color: #38bdf8; }
-        .thumb img { width: 100%; height: 100%; object-fit: cover; }
+        .thumb img.thumb-car-img { width: 100%; height: 100%; object-fit: cover; }
+        .thumb .watermark { height: 14px; bottom: 4px; right: 4px; opacity: 0.5; }
 
         .info-section {
             display: flex;
@@ -238,7 +195,7 @@
         }
 
         .price-box {
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            background: #1e293b;
             border: 2px solid #38bdf8;
             border-radius: 12px;
             padding: 20px;
@@ -247,7 +204,6 @@
             align-items: center;
         }
 
-        .price-box .label { font-size: 0.85rem; color: #94a3b8; text-transform: uppercase; font-weight: 700; }
         .price-box .amount { font-size: 2.2rem; font-weight: 800; color: #38bdf8; }
 
         .specs-card {
@@ -273,335 +229,64 @@
 
         .spec-item { display: flex; flex-direction: column; }
         .spec-label { font-size: 0.75rem; color: #64748b; text-transform: uppercase; font-weight: 700; }
-        .spec-value { font-size: 0.95rem; color: #cbd5e1; font-weight: 600; margin-top: 2px; }
+        .spec-value { font-size: 0.95rem; color: #cbd5e1; font-weight: 600; }
         .highlight-green { color: #22c55e; }
-
-        .history-section {
-            background-color: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 12px;
-            padding: 24px;
-        }
-
-        .history-title {
-            font-size: 1.2rem;
-            font-weight: 700;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .history-badge-count {
-            background-color: #0f172a;
-            color: #38bdf8;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 0.8rem;
-            border: 1px solid #334155;
-        }
-
-        .history-table { width: 100%; border-collapse: collapse; text-align: left; }
-        .history-table th {
-            background-color: #0f172a;
-            color: #64748b;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            padding: 12px 16px;
-            border-bottom: 1px solid #334155;
-        }
-        .history-table td {
-            padding: 14px 16px;
-            border-bottom: 1px solid #334155;
-            font-size: 0.9rem;
-            color: #e2e8f0;
-        }
-        .history-table tr:last-child td { border-bottom: none; }
-        .price-past { font-weight: 700; color: #38bdf8; }
-
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(15, 23, 42, 0.85);
-            backdrop-filter: blur(6px);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .modal-overlay.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background-color: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 12px;
-            max-width: 580px;
-            width: 100%;
-            padding: 30px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            position: relative;
-        }
-
-        .modal-text {
-            font-size: 0.95rem;
-            color: #cbd5e1;
-            line-height: 1.5;
-        }
-
-        .modal-warning-title {
-            font-size: 0.9rem;
-            font-weight: 800;
-            color: #ef4444;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-top: 5px;
-        }
-
-        .modal-list {
-            list-style-type: disc;
-            margin-left: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            color: #94a3b8;
-            font-size: 0.9rem;
-        }
-
-        .modal-checkbox-group {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            margin-top: 10px;
-            background-color: #0f172a;
-            padding: 14px;
-            border-radius: 8px;
-            border: 1px solid #334155;
-        }
-
-        .modal-checkbox-group input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            accent-color: #38bdf8;
-            margin-top: 2px;
-            cursor: pointer;
-        }
-
-        .modal-checkbox-group label {
-            font-size: 0.9rem;
-            color: #e2e8f0;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .modal-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 12px;
-            margin-top: 10px;
-        }
-
-        .modal-btn {
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-weight: 700;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .modal-btn-secondary {
-            background-color: transparent;
-            color: #94a3b8;
-            border: 1px solid #334155;
-        }
-
-        .modal-btn-secondary:hover {
-            background-color: #334155;
-            color: #ffffff;
-        }
-
-        .modal-btn-primary {
-            background: linear-gradient(135deg, #38bdf8, #0284c7);
-            color: #0f172a;
-            border: none;
-            box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
-        }
-
-        .modal-btn-primary:hover {
-            box-shadow: 0 4px 16px rgba(56, 189, 248, 0.5);
-            transform: translateY(-1px);
-        }
-
-        .modal-btn-primary.disabled {
-            background: #334155 !important;
-            color: #64748b !important;
-            cursor: not-allowed !important;
-            box-shadow: none !important;
-            transform: none !important;
-        }
     </style>
 </head>
 <body>
 
     <div class="container">
-
         <div class="header-logo">
-            <a href="index.html" class="logo">
+            <a href="index.html">
                 <img src="logo_2.png" alt="VINDOCTOR" class="logo-img">
             </a>
         </div>
 
         <div class="top-bar">
             <a href="index.html" class="back-link">← Back to listings</a>
-            <button class="claim-btn" onclick="openClaimModal()">Claim This Lot</button>
+            <button class="claim-btn">Claim This Lot</button>
         </div>
 
         <div class="car-header">
             <div>
-                <h1 class="car-title-main" id="carTitle">2022 Ford Mustang GT</h1>
-                <div class="vin-pill" id="carVin">VIN: 1FA6P8CF5M5123456</div>
+                <h1 class="car-title-main" id="carTitle">Loading...</h1>
+                <div class="vin-pill" id="carVin">VIN: ---</div>
             </div>
             <span class="auction-badge copart" id="carAuctionBadge">COPART</span>
         </div>
 
         <div class="details-layout">
-
             <div class="gallery-section">
                 <div class="main-image-container">
                     <button class="nav-arrow prev" onclick="prevImage()">❮</button>
-                    <img id="mainImage" src="" alt="Main Image">
+                    <img id="mainImage" class="main-car-img" src="" alt="Main Image">
                     <button class="nav-arrow next" onclick="nextImage()">❯</button>
+                    <!-- AUTOMATYCZNY WATERMARK -->
+                    <img src="logo_2.png" class="watermark" alt="Watermark">
                 </div>
-
                 <div class="thumbnails-grid" id="thumbsGrid"></div>
             </div>
 
             <div class="info-section">
-                
                 <div class="price-box">
                     <div>
-                        <div class="label">Final Auction Price</div>
-                        <div style="font-size: 0.75rem; color: #64748b;">Winning Bid</div>
+                        <div style="font-size: 0.85rem; color: #94a3b8; text-transform: uppercase; font-weight: 700;">Final Auction Price</div>
                     </div>
-                    <div class="amount" id="carPrice">$14,200 USD</div>
+                    <div class="amount" id="carPrice">$0 USD</div>
                 </div>
 
                 <div class="specs-card">
                     <h3>Vehicle Specifications</h3>
-                    
                     <div class="specs-list">
-                        <div class="spec-item">
-                            <span class="spec-label">Location</span>
-                            <span class="spec-value" id="specLocation">FL - TAMPA</span>
-                        </div>
-                        <div class="spec-item">
-                            <span class="spec-label">Sale Date</span>
-                            <span class="spec-value" id="specDate">07/25/2026</span>
-                        </div>
-                        <div class="spec-item">
-                            <span class="spec-label">Engine Status</span>
-                            <span class="spec-value highlight-green" id="specStatus">Run & Drive</span>
-                        </div>
-                        <div class="spec-item">
-                            <span class="spec-label">Primary Damage</span>
-                            <span class="spec-value" id="specDamage">Front End</span>
-                        </div>
-                        <div class="spec-item">
-                            <span class="spec-label">Sale Document</span>
-                            <span class="spec-value" id="specDoc">Clean Title</span>
-                        </div>
-                        <div class="spec-item">
-                            <span class="spec-label">Odometer</span>
-                            <span class="spec-value" id="specOdometer">18,400 mi (ACTUAL)</span>
-                        </div>
-                        <div class="spec-item">
-                            <span class="spec-label">Transmission</span>
-                            <span class="spec-value">Automatic</span>
-                        </div>
-                        <div class="spec-item">
-                            <span class="spec-label">Seller</span>
-                            <span class="spec-value" id="specSeller">Insurance Corp</span>
-                        </div>
+                        <div class="spec-item"><span class="spec-label">Location</span><span class="spec-value" id="specLocation">-</span></div>
+                        <div class="spec-item"><span class="spec-label">Sale Date</span><span class="spec-value" id="specDate">-</span></div>
+                        <div class="spec-item"><span class="spec-label">Engine Status</span><span class="spec-value highlight-green" id="specStatus">-</span></div>
+                        <div class="spec-item"><span class="spec-label">Primary Damage</span><span class="spec-value" id="specDamage">-</span></div>
+                        <div class="spec-item"><span class="spec-label">Sale Document</span><span class="spec-value" id="specDoc">-</span></div>
+                        <div class="spec-item"><span class="spec-label">Odometer</span><span class="spec-value" id="specOdometer">-</span></div>
+                        <div class="spec-item"><span class="spec-label">Seller</span><span class="spec-value" id="specSeller">-</span></div>
                     </div>
                 </div>
-
-            </div>
-        </div>
-
-        <div class="history-section">
-            <div class="history-title">
-                🕒 Sales History (VIN History)
-                <span class="history-badge-count">Records found: 2</span>
-            </div>
-
-            <table class="history-table">
-                <thead>
-                    <tr>
-                        <th>Auction Date</th>
-                        <th>Auction House</th>
-                        <th>Location</th>
-                        <th>Odometer</th>
-                        <th>Status</th>
-                        <th>Final Price</th>
-                    </tr>
-                </thead>
-                <tbody id="historyTableBody">
-                    <tr>
-                        <td>05/12/2026</td>
-                        <td>COPART</td>
-                        <td>FL - TAMPA SOUTH</td>
-                        <td>18,390 mi</td>
-                        <td>Not Sold (Reserve Not Met)</td>
-                        <td class="price-past">$12,800 USD</td>
-                    </tr>
-                    <tr>
-                        <td>01/10/2026</td>
-                        <td>IAAI</td>
-                        <td>FL - ORLANDO</td>
-                        <td>18,100 mi</td>
-                        <td>Sold</td>
-                        <td class="price-past">$9,500 USD</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-    </div>
-
-    <div class="modal-overlay" id="claimModal" onclick="handleOverlayClick(event)">
-        <div class="modal-content">
-            <div class="modal-text">
-                We do respect privacy rights of every person. Therefore if you do not want to show the lot you have purchased on our website, you can hide it.
-            </div>
-
-            <div class="modal-warning-title">PLEASE BE AWARE THAT IT IS PROHIBITED TO:</div>
-            
-            <ul class="modal-list">
-                <li>Hide lot if you want to avoid the right tax calculation;</li>
-                <li>Hide lot for hiding damage and odometer information from the future buyers;</li>
-                <li>Hide lot for misinformation, misrepresentation, fraud or other illegal activity;</li>
-            </ul>
-
-            <div class="modal-checkbox-group">
-                <input type="checkbox" id="acceptCheckbox" onchange="toggleNextButton()">
-                <label for="acceptCheckbox">I have read and accept the limitations stated above</label>
-            </div>
-
-            <div class="modal-actions">
-                <button class="modal-btn modal-btn-secondary" onclick="closeClaimModal()">Cancel</button>
-                <button class="modal-btn modal-btn-primary disabled" id="nextStepBtn" onclick="handleNextStep()" disabled>Next step</button>
             </div>
         </div>
     </div>
@@ -620,11 +305,7 @@
                 document: "Clean Title",
                 odometer: "18,400 mi",
                 seller: "Progressive Ins.",
-                images: [
-                    "https://images.unsplash.com/photo-1584345604476-8ec5e12e42dd?auto=format&fit=crop&w=1000&q=80",
-                    "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=1000&q=80",
-                    "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=1000&q=80"
-                ]
+                images: ["https://picsum.photos/id/1071/800/600", "https://picsum.photos/id/111/800/600"]
             },
             {
                 vin: "WBS83AY000CK99887",
@@ -638,9 +319,7 @@
                 document: "Salvage Cert.",
                 odometer: "24,100 mi",
                 seller: "State Farm Ins.",
-                images: [
-                    "https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=1000&q=80"
-                ]
+                images: ["https://picsum.photos/id/183/800/600"]
             },
             {
                 vin: "2C3CDABT8KH654321",
@@ -654,9 +333,7 @@
                 document: "Clean Title",
                 odometer: "9,800 mi",
                 seller: "Geico Insurance",
-                images: [
-                    "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=1000&q=80"
-                ]
+                images: ["https://picsum.photos/id/133/800/600"]
             },
             {
                 vin: "WP0AB2A91LS123987",
@@ -670,9 +347,7 @@
                 document: "Clean Title",
                 odometer: "31,200 mi",
                 seller: "Allstate Ins.",
-                images: [
-                    "https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&w=1000&q=80"
-                ]
+                images: ["https://picsum.photos/id/1072/800/600"]
             },
             {
                 vin: "1G1YB2D45M5987654",
@@ -686,9 +361,7 @@
                 document: "Flood Salvage",
                 odometer: "12,000 mi",
                 seller: "Farmers Ins.",
-                images: [
-                    "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=1000&q=80"
-                ]
+                images: ["https://picsum.photos/id/146/800/600"]
             },
             {
                 vin: "WUAZZZF23MN112233",
@@ -702,9 +375,7 @@
                 document: "Clean Title",
                 odometer: "28,900 mi",
                 seller: "Liberty Mutual",
-                images: [
-                    "https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?auto=format&fit=crop&w=1000&q=80"
-                ]
+                images: ["https://picsum.photos/id/201/800/600"]
             },
             {
                 vin: "1C4HJXFN2LW887766",
@@ -718,9 +389,7 @@
                 document: "Salvage Title",
                 odometer: "42,500 mi",
                 seller: "USAA Insurance",
-                images: [
-                    "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=1000&q=80"
-                ]
+                images: ["https://picsum.photos/id/250/800/600"]
             },
             {
                 vin: "WDDYJ8DA4KA334455",
@@ -734,9 +403,7 @@
                 document: "Certificate of Destruction",
                 odometer: "19,100 mi",
                 seller: "Nationwide Ins.",
-                images: [
-                    "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=1000&q=80"
-                ]
+                images: ["https://picsum.photos/id/1070/800/600"]
             },
             {
                 vin: "5YJSA1E20MF991122",
@@ -750,9 +417,7 @@
                 document: "Clean Title",
                 odometer: "15,300 mi",
                 seller: "Travelers Ins.",
-                images: [
-                    "https://images.unsplash.com/photo-1560958089-b8a1929cea89?auto=format&fit=crop&w=1000&q=80"
-                ]
+                images: ["https://picsum.photos/id/184/800/600"]
             }
         ];
 
@@ -761,19 +426,15 @@
 
         function initPage() {
             const urlParams = new URLSearchParams(window.location.search);
-            // Pobieramy parametr 'vin' bez względu na wielkość liter
             let vinParam = urlParams.get('vin') || urlParams.get('VIN');
 
             let car = null;
-
             if (vinParam) {
                 vinParam = vinParam.trim().toLowerCase();
                 car = carDatabase.find(c => c.vin.toLowerCase() === vinParam);
             }
 
-            // Jeśli nie znaleziono po VIN, używamy pierwszego auta
             if (!car) {
-                console.warn("Nie znaleziono auta o podanym VIN, ładowanie domyślnego.");
                 car = carDatabase[0];
             }
 
@@ -791,7 +452,7 @@
             document.getElementById('specStatus').innerText = car.status;
             document.getElementById('specDamage').innerText = car.damage;
             document.getElementById('specDoc').innerText = car.document;
-            document.getElementById('specOdometer').innerText = `${car.odometer} (ACTUAL)`;
+            document.getElementById('specOdometer').innerText = car.odometer;
             document.getElementById('specSeller').innerText = car.seller;
 
             currentCarImages = car.images;
@@ -806,7 +467,8 @@
             
             thumbsGrid.innerHTML = currentCarImages.map((img, idx) => `
                 <div class="thumb ${idx === currentIndex ? 'active' : ''}" onclick="setImage(${idx})">
-                    <img src="${img}" alt="Photo ${idx + 1}">
+                    <img src="${img}" class="thumb-car-img" alt="Photo ${idx + 1}">
+                    <img src="logo_2.png" class="watermark" alt="Watermark">
                 </div>
             `).join('');
         }
@@ -824,140 +486,6 @@
         function prevImage() {
             currentIndex = (currentIndex - 1 + currentCarImages.length) % currentCarImages.length;
             renderGallery();
-        }
-
-        function openClaimModal() {
-            document.getElementById('claimModal').classList.add('active');
-            document.getElementById('acceptCheckbox').checked = false;
-            toggleNextButton();
-        }
-
-        function closeClaimModal() {
-            document.getElementById('claimModal').classList.remove('active');
-        }
-
-        function toggleNextButton() {
-            const checkbox = document.getElementById('acceptCheckbox');
-            const nextBtn = document.getElementById('nextStepBtn');
-            if (checkbox.checked) {
-                nextBtn.classList.remove('disabled');
-                nextBtn.removeAttribute('disabled');
-            } else {
-                nextBtn.classList.add('disabled');
-                nextBtn.setAttribute('disabled', 'true');
-            }
-        }
-
-        function handleNextStep() {
-            alert('Proceeding to the next step of claiming the lot.');
-            closeClaimModal();
-        }
-
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape') {
-                closeClaimModal();
-            }
-        });
-
-        function handleOverlayClick(event) {
-            if (event.target.id === 'claimModal') {
-                closeClaimModal();
-
-        let currentCarImages = [];
-        let currentIndex = 0;
-
-        function initPage() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const vinParam = urlParams.get('vin');
-
-            let car = carDatabase.find(c => c.vin === vinParam) || carDatabase[0];
-
-            document.title = `${car.title} - VINDOCTOR`;
-            document.getElementById('carTitle').innerText = car.title;
-            document.getElementById('carVin').innerText = `VIN: ${car.vin}`;
-            
-            const badge = document.getElementById('carAuctionBadge');
-            badge.innerText = car.auction.toUpperCase();
-            badge.className = `auction-badge ${car.auction}`;
-
-            document.getElementById('carPrice').innerText = car.price;
-            document.getElementById('specLocation').innerText = car.location;
-            document.getElementById('specDate').innerText = car.date;
-            document.getElementById('specStatus').innerText = car.status;
-            document.getElementById('specDamage').innerText = car.damage;
-            document.getElementById('specDoc').innerText = car.document;
-            document.getElementById('specOdometer').innerText = `${car.odometer} (ACTUAL)`;
-            document.getElementById('specSeller').innerText = car.seller;
-
-            currentCarImages = car.images;
-            currentIndex = 0;
-
-            renderGallery();
-        }
-
-        function renderGallery() {
-            document.getElementById('mainImage').src = currentCarImages[currentIndex];
-            const thumbsGrid = document.getElementById('thumbsGrid');
-            
-            thumbsGrid.innerHTML = currentCarImages.map((img, idx) => `
-                <div class="thumb ${idx === currentIndex ? 'active' : ''}" onclick="setImage(${idx})">
-                    <img src="${img}" alt="Photo ${idx + 1}">
-                </div>
-            `).join('');
-        }
-
-        function setImage(index) {
-            currentIndex = index;
-            renderGallery();
-        }
-
-        function nextImage() {
-            currentIndex = (currentIndex + 1) % currentCarImages.length;
-            renderGallery();
-        }
-
-        function prevImage() {
-            currentIndex = (currentIndex - 1 + currentCarImages.length) % currentCarImages.length;
-            renderGallery();
-        }
-
-        function openClaimModal() {
-            document.getElementById('claimModal').classList.add('active');
-            document.getElementById('acceptCheckbox').checked = false;
-            toggleNextButton();
-        }
-
-        function closeClaimModal() {
-            document.getElementById('claimModal').classList.remove('active');
-        }
-
-        function toggleNextButton() {
-            const checkbox = document.getElementById('acceptCheckbox');
-            const nextBtn = document.getElementById('nextStepBtn');
-            if (checkbox.checked) {
-                nextBtn.classList.remove('disabled');
-                nextBtn.removeAttribute('disabled');
-            } else {
-                nextBtn.classList.add('disabled');
-                nextBtn.setAttribute('disabled', 'true');
-            }
-        }
-
-        function handleNextStep() {
-            alert('Proceeding to the next step of claiming the lot.');
-            closeClaimModal();
-        }
-
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape') {
-                closeClaimModal();
-            }
-        });
-
-        function handleOverlayClick(event) {
-            if (event.target.id === 'claimModal') {
-                closeClaimModal();
-            }
         }
 
         initPage();
