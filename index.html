@@ -517,7 +517,6 @@
     </footer>
 
     <script>
-        // BAZA DANYCH WBUDOWANA NA POTRZEBY GITHUB PAGES
         const carsDatabase = [
             {
                 title: "2022 Ford Mustang GT",
@@ -655,14 +654,41 @@
             }
         }
 
+        function createCarTileHTML(car) {
+            const isRunDrive = car.status === 'run-drive';
+            const statusClass = isRunDrive ? 'status-run-drive' : '';
+
+            return `
+                <div class="car-tile">
+                    <a href="lot.html?vin=${car.vin}" class="card-image-wrapper">
+                        <img src="${car.imageUrl}" alt="${car.title}" class="card-image">
+                        <span class="auction-badge ${car.auction}">${car.auction.toUpperCase()}</span>
+                    </a>
+                    <div class="card-body">
+                        <h2 class="car-title">${car.title}</h2>
+                        <div class="vin-number">VIN: ${car.vin}</div>
+                        <div class="details-grid">
+                            <div class="detail-item"><span class="detail-label">📍 Location</span><span class="detail-value">${car.location}</span></div>
+                            <div class="detail-item"><span class="detail-label">🛣 Odometer</span><span class="detail-value">${car.odometerText}</span></div>
+                            <div class="detail-item"><span class="detail-label">🗝 Status</span><span class="detail-value ${statusClass}">${car.statusText}</span></div>
+                            <div class="detail-item"><span class="detail-label">🛠 Damage</span><span class="detail-value">${car.damageText}</span></div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="price-box-inner"><span class="price-label">Final Price:</span><span class="price-value">${car.price}</span></div>
+                            <a href="lot.html?vin=${car.vin}" class="view-lot-btn">VIEW LOT</a>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
         function renderCars(items) {
             const gridContainer = document.getElementById('carGrid');
             const noResults = document.getElementById('noResults');
 
-            // Czyścimy dotychczasowe kafelki
             document.querySelectorAll('.car-tile').forEach(el => el.remove());
 
-            if (items.length === 0) {
+            if (!items || items.length === 0) {
                 noResults.style.display = 'block';
                 return;
             }
@@ -670,35 +696,10 @@
             noResults.style.display = 'none';
 
             items.forEach(car => {
-                const isRunDrive = car.status === 'run-drive';
-                const statusClass = isRunDrive ? 'status-run-drive' : '';
-
-                const html = `
-                    <div class="car-tile">
-                        <a href="lot.html?vin=${car.vin}" class="card-image-wrapper">
-                            <img src="${car.imageUrl}" alt="${car.title}" class="card-image">
-                            <span class="auction-badge ${car.auction}">${car.auction.toUpperCase()}</span>
-                        </a>
-                        <div class="card-body">
-                            <h2 class="car-title">${car.title}</h2>
-                            <div class="vin-number">VIN: ${car.vin}</div>
-                            <div class="details-grid">
-                                <div class="detail-item"><span class="detail-label">📍 Location</span><span class="detail-value">${car.location}</span></div>
-                                <div class="detail-item"><span class="detail-label">🛣 Odometer</span><span class="detail-value">${car.odometerText}</span></div>
-                                <div class="detail-item"><span class="detail-label">🗝 Status</span><span class="detail-value ${statusClass}">${car.statusText}</span></div>
-                                <div class="detail-item"><span class="detail-label">🛠 Damage</span><span class="detail-value">${car.damageText}</span></div>
-                            </div>
-                            <div class="card-footer">
-                                <div class="price-box-inner"><span class="price-label">Final Price:</span><span class="price-value">${car.price}</span></div>
-                                <a href="lot.html?vin=${car.vin}" class="view-lot-btn">VIEW LOT</a>
-                            </div>
-                        </div>
-                    </div>
-                `;
+                const html = createCarTileHTML(car);
                 gridContainer.insertAdjacentHTML('beforeend', html);
             });
 
-            // Aktualizacja stopki
             let copartCount = items.filter(c => c.auction === 'copart').length;
             let iaaiCount = items.filter(c => c.auction === 'iaai').length;
 
