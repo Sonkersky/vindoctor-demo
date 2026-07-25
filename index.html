@@ -570,13 +570,12 @@
     </footer>
 
     <script>
-        // Pamiętaj o podaniu swojego aktywnego klucza API, jeżeli korzystasz z płatnej usługi.
-        const API_KEY = 'e9b16db5-1f33-4abb-81ca-aecad558b3ee'; 
-        const API_URL = 'https://api.apicar.store/api/history/cars?size=100';
+        // WPISZ TUTAJ SWÓJ TWÓJ KLUCZ / TOKEN API
+        const API_TOKEN = 'e9b16db5-1f33-4abb-81ca-aecad558b3ee'; 
 
         let allCarsData = [];
 
-        // Awaryjna baza danych (wyświetla auta ze zrzutu ekranu w razie braku połączenia/błędu API)
+        // Awaryjna baza samochodów (wyświetla się wyłącznie, gdy API zawiedzie)
         const defaultFallbackCars = [
             { vin: "1FA6P8CF5M5123456", title: "2022 Ford Mustang GT", make: "ford", model: "mustang", year: 2022, site: "copart", damage: "Front End", odometer: 18400, location: "FL - TAMPA", price: 14200, img: "https://images.unsplash.com/photo-1584345604476-8ec5e12e42dd?auto=format&fit=crop&w=600&q=80" },
             { vin: "WBS83AY000CK99887", title: "2021 BMW M4 Competition", make: "bmw", model: "m4", year: 2021, site: "iaai", damage: "Side", odometer: 24100, location: "CA - LOS ANGELES", price: 22800, img: "https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=600&q=80" },
@@ -587,17 +586,14 @@
         ];
 
         async function loadCars() {
+            // Token przekazywany bezpośrednio w adresie URL (omija blokady CORS i błędy autoryzacji nagłówków)
+            const urlWithToken = `https://api.apicar.store/api/history/cars?size=100&api_key=${API_TOKEN}`;
+
             try {
-                const response = await fetch(API_URL, {
-                    method: 'GET',
-                    headers: { 
-                        'api-key': API_KEY, 
-                        'Accept': 'application/json' 
-                    }
-                });
+                const response = await fetch(urlWithToken);
 
                 if (!response.ok) {
-                    throw new Error(`API response status: ${response.status}`);
+                    throw new Error(`Błąd odpowiedzi serwera! Status: ${response.status}`);
                 }
 
                 const resData = await response.json();
@@ -624,10 +620,11 @@
                              || 'https://via.placeholder.com/600x400?text=No+Image'
                     }));
                 } else {
+                    console.warn("API zwróciło pustą listę. Wczytuję dane zapasowe.");
                     allCarsData = defaultFallbackCars;
                 }
             } catch (error) {
-                console.warn("Połączenie z zewnętrznym API nie powiodło się, ładowanie zintegrowanych danych:", error);
+                console.error("Połączenie z zewnętrznym API nie powiodło się:", error);
                 allCarsData = defaultFallbackCars;
             }
 
