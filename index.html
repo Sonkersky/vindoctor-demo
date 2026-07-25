@@ -307,30 +307,16 @@
 
         .view-lot-btn:hover { background-color: #7dd3fc; transform: scale(1.02); }
 
-        /* LOADER & NO RESULTS STATUSES */
-        #statusMessage {
+        #noResults {
             display: none;
             grid-column: 1 / -1;
             text-align: center;
-            padding: 50px;
+            padding: 40px;
             background-color: #1e293b;
             border-radius: 12px;
             color: #94a3b8;
         }
 
-        .spinner {
-            border: 4px solid rgba(255,255,255,0.1);
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            border-left-color: #38bdf8;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 15px auto;
-        }
-
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        /* FOOTER */
         .site-footer {
             background-color: #0b1120;
             border-top: 1px solid #1e293b;
@@ -415,9 +401,6 @@
                         <option value="porsche">Porsche</option>
                         <option value="chevrolet">Chevrolet</option>
                         <option value="audi">Audi</option>
-                        <option value="jeep">Jeep</option>
-                        <option value="mercedes">Mercedes-Benz</option>
-                        <option value="tesla">Tesla</option>
                     </select>
                 </div>
 
@@ -437,7 +420,6 @@
                         <option value="side">Side / Side Damage</option>
                         <option value="hail">Hail</option>
                         <option value="flood">Water / Flood</option>
-                        <option value="rollover">Rollover</option>
                     </select>
                 </div>
 
@@ -476,32 +458,27 @@
                         <option value="TX">Texas (TX)</option>
                         <option value="GA">Georgia (GA)</option>
                         <option value="NY">New York (NY)</option>
-                        <option value="CO">Colorado (CO)</option>
-                        <option value="IL">Illinois (IL)</option>
-                        <option value="NV">Nevada (NV)</option>
                     </select>
                 </div>
 
                 <div class="sidebar-actions">
-                    <button class="btn btn-primary" onclick="fetchCarsFromAPI()">Apply Filters</button>
+                    <button class="btn btn-primary" onclick="applyFilters()">Apply Filters</button>
                     <button class="btn btn-secondary" onclick="clearFilters()">Clear All</button>
                 </div>
             </aside>
 
             <!-- VEHICLES GRID CONTAINER -->
             <main class="car-grid" id="carGrid">
-                
-                <!-- STATUS CONTAINER (Loader/Error/No Results) -->
-                <div id="statusMessage"></div>
-
-                <!-- DYNAMIC TILES WILL BE RENDERED HERE VIA JAVASCRIPT -->
-
+                <div id="noResults">
+                    <h3>No vehicles match your search criteria.</h3>
+                    <p style="margin-top: 8px;">Try clearing filters to see all available cars.</p>
+                </div>
             </main>
         </div>
 
     </div>
 
-    <!-- STOPKA / FOOTER -->
+    <!-- FOOTER -->
     <footer class="site-footer">
         <div class="footer-container">
             <div class="footer-col">
@@ -518,9 +495,9 @@
             <div class="footer-col">
                 <h4 class="footer-heading">Database Overview</h4>
                 <ul class="stats-list">
-                    <li>Lots: <span id="statTotalLots">-</span></li>
-                    <li>Copart Lots: <span id="statCopartLots">-</span></li>
-                    <li>IAAI Lots: <span id="statIaaiLots">-</span></li>
+                    <li>Lots: <span id="statTotalLots">0</span></li>
+                    <li>Copart Lots: <span id="statCopartLots">0</span></li>
+                    <li>IAAI Lots: <span id="statIaaiLots">0</span></li>
                 </ul>
             </div>
 
@@ -539,21 +516,126 @@
         </div>
     </footer>
 
-    <!-- LOGIKA POŁĄCZENIA Z API -->
     <script>
-        // 1. ADRES TWOJEGO BACKENDOWEGO API (Zmień na swój port/domenę)
-        const API_BASE_URL = 'https://api.twojadomena.com/v1'; // np. 'http://localhost:3000/api'
+        // BAZA DANYCH WBUDOWANA NA POTRZEBY GITHUB PAGES
+        const carsDatabase = [
+            {
+                title: "2022 Ford Mustang GT",
+                vin: "1FA6P8CF5M5123456",
+                make: "ford",
+                model: "mustang",
+                year: 2022,
+                auction: "copart",
+                damage: "frontend",
+                damageText: "Front End",
+                status: "run-drive",
+                statusText: "Run & Drive",
+                mileage: 18400,
+                odometerText: "18,400 mi",
+                state: "FL",
+                location: "FL - TAMPA",
+                price: "$14,200 USD",
+                imageUrl: "https://images.unsplash.com/photo-1584345604476-8ec5e12e42dd?auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                title: "2021 BMW M4 Competition",
+                vin: "WBS83AY000CK99887",
+                make: "bmw",
+                model: "m4",
+                year: 2021,
+                auction: "iaai",
+                damage: "side",
+                damageText: "Side / Rear",
+                status: "stationary",
+                statusText: "Stationary",
+                mileage: 24100,
+                odometerText: "24,100 mi",
+                state: "CA",
+                location: "CA - LOS ANGELES",
+                price: "$22,800 USD",
+                imageUrl: "https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                title: "2023 Dodge Challenger R/T",
+                vin: "2C3CDABT8KH654321",
+                make: "dodge",
+                model: "challenger",
+                year: 2023,
+                auction: "copart",
+                damage: "hail",
+                damageText: "Hail",
+                status: "run-drive",
+                statusText: "Run & Drive",
+                mileage: 9800,
+                odometerText: "9,800 mi",
+                state: "TX",
+                location: "TX - DALLAS",
+                price: "$18,500 USD",
+                imageUrl: "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                title: "2020 Porsche 911 Carrera S",
+                vin: "WP0AB2A91LS123987",
+                make: "porsche",
+                model: "911",
+                year: 2020,
+                auction: "iaai",
+                damage: "rearend",
+                damageText: "Rear End",
+                status: "run-drive",
+                statusText: "Run & Drive",
+                mileage: 31200,
+                odometerText: "31,200 mi",
+                state: "FL",
+                location: "FL - MIAMI",
+                price: "$45,000 USD",
+                imageUrl: "https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                title: "2022 Chevrolet Corvette C8",
+                vin: "1G1YB2D45M5987654",
+                make: "chevrolet",
+                model: "corvette",
+                year: 2022,
+                auction: "copart",
+                damage: "flood",
+                damageText: "Water / Flood",
+                status: "starts",
+                statusText: "Starts",
+                mileage: 12000,
+                odometerText: "12,000 mi",
+                state: "GA",
+                location: "GA - ATLANTA",
+                price: "$31,200 USD",
+                imageUrl: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                title: "2021 Audi RS6 Avant",
+                vin: "WUAZZZF23MN112233",
+                make: "audi",
+                model: "rs6",
+                year: 2021,
+                auction: "iaai",
+                damage: "side",
+                damageText: "Side Damage",
+                status: "run-drive",
+                statusText: "Run & Drive",
+                mileage: 28900,
+                odometerText: "28,900 mi",
+                state: "NY",
+                location: "NY - NEW YORK",
+                price: "$39,800 USD",
+                imageUrl: "https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?auto=format&fit=crop&w=600&q=80"
+            }
+        ];
 
         const modelsByMake = {
-            ford: [{ value: "mustang", text: "Mustang" }, { value: "f150", text: "F-150" }],
-            bmw: [{ value: "m4", text: "M4" }, { value: "m3", text: "M3" }],
+            ford: [{ value: "mustang", text: "Mustang" }],
+            bmw: [{ value: "m4", text: "M4" }],
             dodge: [{ value: "challenger", text: "Challenger" }],
             porsche: [{ value: "911", text: "911" }],
             chevrolet: [{ value: "corvette", text: "Corvette" }],
-            audi: [{ value: "rs6", text: "RS6" }],
-            jeep: [{ value: "wrangler", text: "Wrangler" }],
-            mercedes: [{ value: "gt", text: "AMG GT" }],
-            tesla: [{ value: "models", text: "Model S" }]
+            audi: [{ value: "rs6", text: "RS6" }]
         };
 
         function updateModelOptions() {
@@ -573,131 +655,88 @@
             }
         }
 
-        // 2. FUNKCJA POBIERAJĄCA DANE Z API I RENDERUJĄCA KAFELKI
-        async function fetchCarsFromAPI() {
+        function renderCars(items) {
             const gridContainer = document.getElementById('carGrid');
-            const statusMsg = document.getElementById('statusMessage');
+            const noResults = document.getElementById('noResults');
 
-            // Pokazujemy loader i czyścimy stare kafelki
-            statusMsg.style.display = 'block';
-            statusMsg.innerHTML = '<div class="spinner"></div><p>Searching auction database...</p>';
-            
-            // Usuwamy istniejące kafelki pojazdów
-            document.querySelectorAll('.car-tile').forEach(tile => tile.remove());
+            // Czyścimy dotychczasowe kafelki
+            document.querySelectorAll('.car-tile').forEach(el => el.remove());
 
-            // Budujemy parametry query zapytania REST API
-            const params = new URLSearchParams();
-            
+            if (items.length === 0) {
+                noResults.style.display = 'block';
+                return;
+            }
+
+            noResults.style.display = 'none';
+
+            items.forEach(car => {
+                const isRunDrive = car.status === 'run-drive';
+                const statusClass = isRunDrive ? 'status-run-drive' : '';
+
+                const html = `
+                    <div class="car-tile">
+                        <a href="lot.html?vin=${car.vin}" class="card-image-wrapper">
+                            <img src="${car.imageUrl}" alt="${car.title}" class="card-image">
+                            <span class="auction-badge ${car.auction}">${car.auction.toUpperCase()}</span>
+                        </a>
+                        <div class="card-body">
+                            <h2 class="car-title">${car.title}</h2>
+                            <div class="vin-number">VIN: ${car.vin}</div>
+                            <div class="details-grid">
+                                <div class="detail-item"><span class="detail-label">📍 Location</span><span class="detail-value">${car.location}</span></div>
+                                <div class="detail-item"><span class="detail-label">🛣 Odometer</span><span class="detail-value">${car.odometerText}</span></div>
+                                <div class="detail-item"><span class="detail-label">🗝 Status</span><span class="detail-value ${statusClass}">${car.statusText}</span></div>
+                                <div class="detail-item"><span class="detail-label">🛠 Damage</span><span class="detail-value">${car.damageText}</span></div>
+                            </div>
+                            <div class="card-footer">
+                                <div class="price-box-inner"><span class="price-label">Final Price:</span><span class="price-value">${car.price}</span></div>
+                                <a href="lot.html?vin=${car.vin}" class="view-lot-btn">VIEW LOT</a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                gridContainer.insertAdjacentHTML('beforeend', html);
+            });
+
+            // Aktualizacja stopki
+            let copartCount = items.filter(c => c.auction === 'copart').length;
+            let iaaiCount = items.filter(c => c.auction === 'iaai').length;
+
+            document.getElementById('statTotalLots').textContent = items.length;
+            document.getElementById('statCopartLots').textContent = copartCount;
+            document.getElementById('statIaaiLots').textContent = iaaiCount;
+        }
+
+        function applyFilters() {
             const auction = document.getElementById('filterAuction').value;
             const make = document.getElementById('filterMake').value;
             const model = document.getElementById('filterModel').value;
             const damage = document.getElementById('filterDamage').value;
             const status = document.getElementById('filterStatus').value;
             const state = document.getElementById('filterState').value;
-            const yearFrom = document.getElementById('filterYearFrom').value;
-            const yearTo = document.getElementById('filterYearTo').value;
-            const mileageFrom = document.getElementById('filterMileageFrom').value;
-            const mileageTo = document.getElementById('filterMileageTo').value;
 
-            if (auction) params.append('auction', auction);
-            if (make) params.append('make', make);
-            if (model) params.append('model', model);
-            if (damage) params.append('damage', damage);
-            if (status) params.append('status', status);
-            if (state) params.append('state', state);
-            if (yearFrom) params.append('year_from', yearFrom);
-            if (yearTo) params.append('year_to', yearTo);
-            if (mileageFrom) params.append('mileage_from', mileageFrom);
-            if (mileageTo) params.append('mileage_to', mileageTo);
+            const yearFrom = parseInt(document.getElementById('filterYearFrom').value) || 0;
+            const yearTo = parseInt(document.getElementById('filterYearTo').value) || 9999;
+            const mileageFrom = parseInt(document.getElementById('filterMileageFrom').value) || 0;
+            const mileageTo = parseInt(document.getElementById('filterMileageTo').value) || 9999999;
 
-            try {
-                // Wywołanie endpointu (przykładowo: /api/cars?make=ford&auction=copart...)
-                const response = await fetch(`${API_BASE_URL}/cars?${params.toString()}`);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
+            const filtered = carsDatabase.filter(car => {
+                if (auction && car.auction !== auction) return false;
+                if (make && car.make !== make) return false;
+                if (model && car.model !== model) return false;
+                if (damage && car.damage !== damage) return false;
+                if (status && car.status !== status) return false;
+                if (state && car.state !== state) return false;
 
-                const data = await response.json();
-                /* 
-                   Oczekiwany format JSON zwracany przez Twoje API:
-                   {
-                     "total": 1500,
-                     "copartTotal": 900,
-                     "iaaiTotal": 600,
-                     "items": [
-                        {
-                          "title": "2022 Ford Mustang GT",
-                          "vin": "1FA6P8CF5M5123456",
-                          "auction": "copart",
-                          "location": "FL - TAMPA",
-                          "odometer": "18,400 mi",
-                          "status": "Run & Drive",
-                          "damage": "Front End",
-                          "price": "$14,200 USD",
-                          "imageUrl": "https://...",
-                          "lotUrl": "lot.html?vin=1FA6P8CF5M5123456"
-                        }
-                     ]
-                   }
-                */
+                if (car.year < yearFrom || car.year > yearTo) return false;
+                if (car.mileage < mileageFrom || car.mileage > mileageTo) return false;
 
-                statusMsg.style.display = 'none';
+                return true;
+            });
 
-                if (!data.items || data.items.length === 0) {
-                    statusMsg.style.display = 'block';
-                    statusMsg.innerHTML = '<h3>No vehicles match your search criteria.</h3><p style="margin-top:8px;">Try clearing filters to see all available cars.</p>';
-                    updateFooterStats(0, 0, 0);
-                    return;
-                }
-
-                // Generowanie kafelków HTML z danych pobranych z API
-                data.items.forEach(car => {
-                    const tileHtml = createCarTileHTML(car);
-                    gridContainer.insertAdjacentHTML('beforeend', tileHtml);
-                });
-
-                // Zaktualizowanie liczników w stopce
-                updateFooterStats(data.total || data.items.length, data.copartTotal || 0, data.iaaiTotal || 0);
-
-            } catch (error) {
-                console.error("API Fetch Error:", error);
-                statusMsg.style.display = 'block';
-                statusMsg.innerHTML = '<h3>Unable to fetch vehicle data.</h3><p style="margin-top:8px; color: #ef4444;">Please check your internet connection or API endpoint setup.</p>';
-            }
+            renderCars(filtered);
         }
 
-        // 3. GENEROWANIE POJEDYNCZEGO KAFELKA NA PODSTAWIE OBIEKTU Z API
-        function createCarTileHTML(car) {
-            const isRunDrive = car.status && car.status.toLowerCase().includes('run');
-            const statusClass = isRunDrive ? 'status-run-drive' : '';
-            const auctionClass = car.auction ? car.auction.toLowerCase() : 'copart';
-
-            return `
-                <div class="car-tile">
-                    <a href="${car.lotUrl || 'lot.html?vin=' + car.vin}" class="card-image-wrapper">
-                        <img src="${car.imageUrl || 'https://via.placeholder.com/600x400'}" alt="${car.title}" class="card-image">
-                        <span class="auction-badge ${auctionClass}">${car.auction.toUpperCase()}</span>
-                    </a>
-                    <div class="card-body">
-                        <h2 class="car-title">${car.title}</h2>
-                        <div class="vin-number">VIN: ${car.vin}</div>
-                        <div class="details-grid">
-                            <div class="detail-item"><span class="detail-label">📍 Location</span><span class="detail-value">${car.location}</span></div>
-                            <div class="detail-item"><span class="detail-label">🛣 Odometer</span><span class="detail-value">${car.odometer}</span></div>
-                            <div class="detail-item"><span class="detail-label">🗝 Status</span><span class="detail-value ${statusClass}">${car.status}</span></div>
-                            <div class="detail-item"><span class="detail-label">🛠 Damage</span><span class="detail-value">${car.damage}</span></div>
-                        </div>
-                        <div class="card-footer">
-                            <div class="price-box-inner"><span class="price-label">Final Price:</span><span class="price-value">${car.price}</span></div>
-                            <a href="${car.lotUrl || 'lot.html?vin=' + car.vin}" class="view-lot-btn">VIEW LOT</a>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        // 4. METODA DLA RESETU FILTRÓW
         function clearFilters() {
             document.getElementById('filterAuction').value = '';
             document.getElementById('filterMake').value = '';
@@ -709,17 +748,12 @@
             document.getElementById('filterMileageFrom').value = '';
             document.getElementById('filterMileageTo').value = '';
             updateModelOptions();
-            fetchCarsFromAPI();
+            renderCars(carsDatabase);
         }
 
-        function updateFooterStats(total, copart, iaai) {
-            document.getElementById('statTotalLots').textContent = total.toLocaleString();
-            document.getElementById('statCopartLots').textContent = copart.toLocaleString();
-            document.getElementById('statIaaiLots').textContent = iaai.toLocaleString();
-        }
-
-        // Inicjalne pobranie danych po załadowaniu strony
-        window.addEventListener('DOMContentLoaded', fetchCarsFromAPI);
+        window.addEventListener('DOMContentLoaded', () => {
+            renderCars(carsDatabase);
+        });
     </script>
 </body>
 </html>
