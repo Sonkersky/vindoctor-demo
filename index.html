@@ -383,7 +383,6 @@
             color: #94a3b8;
         }
 
-        /* --- STYLIZACJA STOPKI --- */
         .site-footer {
             background-color: #0b1120;
             border-top: 1px solid #1e293b;
@@ -616,6 +615,70 @@
                     <p style="margin-top: 8px;">Try clearing filters to see all available cars.</p>
                 </div>
 
+                <!-- Domyślny zestaw aut pokazujący układ -->
+                <div class="car-tile" data-make="ford" data-model="mustang" data-year="2022" data-auction="copart" data-damage="frontend" data-status="run-drive" data-mileage="18400" data-state="FL">
+                    <a href="lot.html?vin=1FA6P8CF5M5123456" class="card-image-wrapper">
+                        <img src="https://images.unsplash.com/photo-1584345604476-8ec5e12e42dd?auto=format&fit=crop&w=600&q=80" alt="Ford Mustang GT" class="card-image">
+                        <span class="auction-badge copart">COPART</span>
+                    </a>
+                    <div class="card-body">
+                        <h2 class="car-title">2022 Ford Mustang GT</h2>
+                        <div class="vin-number">VIN: 1FA6P8CF5M5123456</div>
+                        <div class="details-grid">
+                            <div class="detail-item"><span class="detail-label">📍 Location</span><span class="detail-value">FL - TAMPA</span></div>
+                            <div class="detail-item"><span class="detail-label">🛣 Odometer</span><span class="detail-value">18,400 mi</span></div>
+                            <div class="detail-item"><span class="detail-label">🗝 Status</span><span class="detail-value status-run-drive">Run & Drive</span></div>
+                            <div class="detail-item"><span class="detail-label">🛠 Damage</span><span class="detail-value">Front End</span></div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="price-box-inner"><span class="price-label">Final Price:</span><span class="price-value">$14,200 USD</span></div>
+                            <a href="lot.html?vin=1FA6P8CF5M5123456" class="view-lot-btn">VIEW LOT</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="car-tile" data-make="bmw" data-model="m4" data-year="2021" data-auction="iaai" data-damage="side" data-status="stationary" data-mileage="24100" data-state="CA">
+                    <a href="lot.html?vin=WBS83AY000CK99887" class="card-image-wrapper">
+                        <img src="https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=600&q=80" alt="BMW M4" class="card-image">
+                        <span class="auction-badge iaai">IAAI</span>
+                    </a>
+                    <div class="card-body">
+                        <h2 class="car-title">2021 BMW M4 Competition</h2>
+                        <div class="vin-number">VIN: WBS83AY000CK99887</div>
+                        <div class="details-grid">
+                            <div class="detail-item"><span class="detail-label">📍 Location</span><span class="detail-value">CA - LOS ANGELES</span></div>
+                            <div class="detail-item"><span class="detail-label">🛣 Odometer</span><span class="detail-value">24,100 mi</span></div>
+                            <div class="detail-item"><span class="detail-label">🗝 Status</span><span class="detail-value">Stationary</span></div>
+                            <div class="detail-item"><span class="detail-label">🛠 Damage</span><span class="detail-value">Side / Rear</span></div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="price-box-inner"><span class="price-label">Final Price:</span><span class="price-value">$22,800 USD</span></div>
+                            <a href="lot.html?vin=WBS83AY000CK99887" class="view-lot-btn">VIEW LOT</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="car-tile" data-make="dodge" data-model="challenger" data-year="2023" data-auction="copart" data-damage="hail" data-status="run-drive" data-mileage="9800" data-state="TX">
+                    <a href="lot.html?vin=2C3CDABT8KH654321" class="card-image-wrapper">
+                        <img src="https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=600&q=80" alt="Dodge Challenger" class="card-image">
+                        <span class="auction-badge copart">COPART</span>
+                    </a>
+                    <div class="card-body">
+                        <h2 class="car-title">2023 Dodge Challenger R/T</h2>
+                        <div class="vin-number">VIN: 2C3CDABT8KH654321</div>
+                        <div class="details-grid">
+                            <div class="detail-item"><span class="detail-label">📍 Location</span><span class="detail-value">TX - DALLAS</span></div>
+                            <div class="detail-item"><span class="detail-label">🛣 Odometer</span><span class="detail-value">9,800 mi</span></div>
+                            <div class="detail-item"><span class="detail-label">🗝 Status</span><span class="detail-value status-run-drive">Run & Drive</span></div>
+                            <div class="detail-item"><span class="detail-label">🛠 Damage</span><span class="detail-value">Hail</span></div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="price-box-inner"><span class="price-label">Final Price:</span><span class="price-value">$18,500 USD</span></div>
+                            <a href="lot.html?vin=2C3CDABT8KH654321" class="view-lot-btn">VIEW LOT</a>
+                        </div>
+                    </div>
+                </div>
+
             </main>
         </div>
 
@@ -624,7 +687,6 @@
     <!-- STOPKA / FOOTER -->
     <footer class="site-footer">
         <div class="footer-container">
-            <!-- COL 1: LOGO & CONTACT -->
             <div class="footer-col">
                 <a href="index.html">
                     <img src="logo_2.png" alt="VINDOCTOR Logo" class="footer-logo">
@@ -636,7 +698,6 @@
                 </p>
             </div>
 
-            <!-- COL 2: SYSTEM STATS -->
             <div class="footer-col">
                 <h4 class="footer-heading">Database Overview</h4>
                 <ul class="stats-list">
@@ -646,7 +707,6 @@
                 </ul>
             </div>
 
-            <!-- COL 3: LEGAL & LINKS -->
             <div class="footer-col">
                 <h4 class="footer-heading">Information</h4>
                 <ul class="footer-links">
@@ -662,10 +722,11 @@
         </div>
     </footer>
 
-    <!-- SCRIPT FOR API & FILTERS -->
+    <!-- OBSŁUGA FILTRÓW I INTEGRACJA API -->
     <script>
-        // PODMIEN TWÓJ URL DO API Z TOKENEM PONIŻEJ
-        const API_URL = 'https://doc.apicar.store/lots?token=e9b16db5-1f33-4abb-81ca-aecad558b3ee';
+        // WPISZ KLUCZ API PONIŻEJ
+        const API_KEY = 'e9b16db5-1f33-4abb-81ca-aecad558b3ee'; 
+        const API_URL = 'https://api.apicar.store/api/cars';
 
         const modelsByMake = {
             ford: [{ value: "mustang", text: "Mustang" }, { value: "f150", text: "F-150" }, { value: "explorer", text: "Explorer" }],
@@ -680,35 +741,48 @@
         };
 
         async function loadVehiclesFromApi() {
+            if (!API_KEY) {
+                calculateStats();
+                return; 
+            }
+
             const grid = document.getElementById('carGrid');
+            grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 50px; color: #38bdf8; font-size: 1.2rem;">Loading vehicles from API...</div>`;
+
             try {
-                const response = await fetch(API_URL);
-                if (!response.ok) throw new Error('Network error');
+                const response = await fetch(API_URL, {
+                    method: 'GET',
+                    headers: {
+                        'api-key': API_KEY,
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`API Error: ${response.status} ${response.statusText}`);
+                }
                 
                 const resJson = await response.json();
-                
-                // Kluczowe poprawienie: czytamy tablicę z pola 'data'
-                const vehicles = resJson.data || [];
+                const vehicles = Array.isArray(resJson) ? resJson : (resJson.data || resJson.result || resJson.cars || []);
 
-                if (vehicles.length === 0) {
+                if (!vehicles || vehicles.length === 0) {
                     grid.innerHTML = `<div id="noResults" style="display:block;"><h3>No vehicles found in database.</h3></div>`;
                     return;
                 }
 
-                // Generowanie kafelków dynamicznie
                 const tilesHTML = vehicles.map(car => {
                     const imgUrl = (car.link_img_small && car.link_img_small.length > 0) 
                         ? car.link_img_small[0] 
-                        : 'https://via.placeholder.com/600x400?text=No+Image';
+                        : (car.images && car.images.length > 0 ? car.images[0] : 'https://via.placeholder.com/600x400?text=No+Image');
 
-                    const baseSite = (car.base_site || 'copart').toLowerCase();
+                    const baseSite = (car.base_site || car.site || 'copart').toLowerCase();
                     const make = (car.make || '').toLowerCase();
                     const model = (car.model || '').toLowerCase();
                     const year = car.year || '';
                     const vin = car.vin || '';
-                    const mileage = car.odometer || 0;
+                    const mileage = car.odometer || car.mileage || 0;
                     const location = car.location || 'N/A';
-                    const price = car.final_bid || car.buy_it_now || 'N/A';
+                    const price = car.final_bid || car.buy_it_now || car.price || 'N/A';
                     const title = car.title || `${year} ${car.make || ''} ${car.model || ''}`;
 
                     return `
@@ -717,7 +791,7 @@
                              data-model="${model}" 
                              data-year="${year}" 
                              data-auction="${baseSite}" 
-                             data-damage="${(car.damage_pr || '').toLowerCase()}" 
+                             data-damage="${(car.damage_pr || car.damage || '').toLowerCase()}" 
                              data-status="${(car.status || '').toLowerCase()}" 
                              data-mileage="${mileage}" 
                              data-state="${location.substring(0, 2)}">
@@ -730,9 +804,9 @@
                                 <div class="vin-number">VIN: ${vin}</div>
                                 <div class="details-grid">
                                     <div class="detail-item"><span class="detail-label">📍 Location</span><span class="detail-value">${location}</span></div>
-                                    <div class="detail-item"><span class="detail-label">🛣 Odometer</span><span class="detail-value">${mileage.toLocaleString()} mi</span></div>
+                                    <div class="detail-item"><span class="detail-label">🛣 Odometer</span><span class="detail-value">${Number(mileage).toLocaleString()} mi</span></div>
                                     <div class="detail-item"><span class="detail-label">🗝 Status</span><span class="detail-value status-run-drive">${car.status || 'Run & Drive'}</span></div>
-                                    <div class="detail-item"><span class="detail-label">🛠 Damage</span><span class="detail-value">${car.damage_pr || 'N/A'}</span></div>
+                                    <div class="detail-item"><span class="detail-label">🛠 Damage</span><span class="detail-value">${car.damage_pr || car.damage || 'N/A'}</span></div>
                                 </div>
                                 <div class="card-footer">
                                     <div class="price-box-inner"><span class="price-label">Final Price:</span><span class="price-value">$${price} USD</span></div>
@@ -753,7 +827,13 @@
                 calculateStats();
 
             } catch (err) {
-                console.error("Error fetching vehicles:", err);
+                console.error("API Error:", err);
+                grid.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 40px; background-color: #1e293b; border-radius: 12px; border: 1px solid #ef4444; color: #f87171;">
+                        <h3>Błąd połączenia z API</h3>
+                        <p style="margin-top: 8px; color: #cbd5e1; font-size: 0.9rem;">${err.message}</p>
+                    </div>
+                `;
             }
         }
 
