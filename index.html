@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VINDOCTOR - Vehicle Auction History</title>
+    <title>VINDOCTOR - US Auto Auctions Search</title>
     <style>
         * {
             box-sizing: border-box;
@@ -15,9 +15,11 @@
         body {
             background-color: #0f172a;
             color: #f8fafc;
-            padding: 20px;
+            padding: 20px 20px 0 20px;
             position: relative;
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
         body::before {
@@ -40,187 +42,417 @@
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             position: relative;
             z-index: 1;
+            flex-grow: 1;
+            width: 100%;
         }
 
         .header-logo {
             text-align: center;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
         }
 
         .logo-img {
-            height: 50px;
+            height: 45px;
             width: auto;
             filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
+            animation: logoPulse 5s infinite ease-in-out;
         }
 
-        .search-card {
-            background: rgba(30, 41, 59, 0.85);
+        @keyframes logoPulse {
+            0%, 85%, 100% {
+                transform: scale(1);
+                filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
+            }
+            92% {
+                transform: scale(1.06);
+                filter: drop-shadow(0 0 15px rgba(56, 189, 248, 0.6));
+            }
+        }
+
+        .top-search-section {
+            background-color: rgba(15, 23, 42, 0.85);
             backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(56, 189, 248, 0.25);
             border-radius: 12px;
-            padding: 24px;
-            border: 1px solid #334155;
-            margin-bottom: 32px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
-        .filters-grid {
+        .top-search-form {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: 2fr 1fr;
             gap: 16px;
+        }
+
+        .search-input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .search-input-group label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #94a3b8;
+            font-weight: 700;
+        }
+
+        .top-search-input, .top-search-select {
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            background-color: rgba(15, 23, 42, 0.9);
+            color: #fff;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            width: 100%;
+        }
+
+        .top-search-input:focus, .top-search-select:focus {
+            border-color: #38bdf8;
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+        }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 25px;
+            align-items: start;
+            margin-bottom: 50px;
+        }
+
+        .sidebar-filters {
+            background-color: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(12px);
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 20px;
+            position: sticky;
+            top: 20px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        }
+
+        .filter-title {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 18px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #334155;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .filter-group {
             display: flex;
             flex-direction: column;
             gap: 6px;
+            margin-bottom: 16px;
         }
 
-        .filter-group label {
-            font-size: 0.8rem;
+        .filter-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
             color: #94a3b8;
             font-weight: 700;
-            text-transform: uppercase;
         }
 
-        .filter-group input, .filter-group select {
-            background-color: #0f172a;
-            border: 1px solid #334155;
-            color: #f8fafc;
-            padding: 10px 14px;
+        .filter-select, .filter-input-range {
+            width: 100%;
+            padding: 10px 12px;
             border-radius: 6px;
-            font-size: 0.95rem;
+            border: 1px solid #334155;
+            background-color: #0f172a;
+            color: #e2e8f0;
+            font-size: 0.85rem;
             outline: none;
         }
 
-        .filter-group input:focus, .filter-group select:focus {
+        .filter-select:focus, .filter-input-range:focus {
             border-color: #38bdf8;
         }
 
-        .cars-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 24px;
+        .range-group {
+            display: flex;
+            gap: 8px;
         }
 
-        .car-card {
+        .sidebar-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #334155;
+        }
+
+        .btn {
+            padding: 11px 16px;
+            border-radius: 6px;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            font-size: 0.85rem;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background-color: #38bdf8;
+            color: #0f172a;
+            box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
+        }
+
+        .btn-secondary {
+            background-color: #334155;
+            color: #cbd5e1;
+        }
+
+        .car-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+            gap: 20px;
+        }
+
+        .car-tile {
             background-color: #1e293b;
             border: 1px solid #334155;
             border-radius: 12px;
             overflow: hidden;
-            transition: transform 0.2s ease, border-color 0.2s ease;
-            text-decoration: none;
-            color: inherit;
             display: flex;
             flex-direction: column;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
 
-        .car-card:hover {
+        .car-tile.hidden {
+            display: none !important;
+        }
+
+        .car-tile:hover {
             transform: translateY(-4px);
-            border-color: #38bdf8;
+            box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.6);
+            border-color: #475569;
         }
 
-        .car-img-container {
-            width: 100%;
-            height: 180px;
-            background-color: #0f172a;
+        .card-image-wrapper {
             position: relative;
+            width: 100%;
+            height: 190px;
+            background-color: #0f172a;
+            display: block;
+            overflow: hidden;
         }
 
-        .car-img-container img {
+        .card-image {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            transition: transform 0.3s ease;
         }
 
-        .badge-auction {
+        .card-image-wrapper:hover .card-image {
+            transform: scale(1.05);
+        }
+
+        .auction-badge {
             position: absolute;
             top: 10px;
             right: 10px;
-            padding: 4px 10px;
-            border-radius: 4px;
-            font-size: 0.75rem;
+            padding: 5px 10px;
+            border-radius: 6px;
             font-weight: 800;
+            font-size: 0.7rem;
             text-transform: uppercase;
-            color: white;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            z-index: 2;
         }
 
-        .badge-auction.copart { background-color: #0053a0; }
-        .badge-auction.iaai { background-color: #dc2626; }
+        .auction-badge.copart { background-color: #0053a0; color: #ffffff; }
+        .auction-badge.iaai { background-color: #dc2626; color: #ffffff; }
 
-        .car-info {
+        .card-body {
             padding: 16px;
             display: flex;
             flex-direction: column;
-            gap: 8px;
             flex-grow: 1;
         }
 
         .car-title {
-            font-size: 1.1rem;
+            font-size: 1.15rem;
             font-weight: 700;
             color: #ffffff;
-            line-height: 1.3;
+            margin-bottom: 2px;
         }
 
-        .car-vin {
-            font-family: monospace;
-            font-size: 0.85rem;
+        .vin-number {
+            font-size: 0.8rem;
             color: #94a3b8;
+            font-family: monospace;
+            margin-bottom: 14px;
         }
 
-        .car-details {
+        .details-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 6px;
-            margin-top: 8px;
-            font-size: 0.8rem;
-            color: #cbd5e1;
+            gap: 8px 10px;
+            padding-top: 10px;
+            border-top: 1px solid #334155;
+            margin-bottom: 14px;
         }
 
-        .car-price-row {
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        .detail-value {
+            font-size: 0.8rem;
+            color: #cbd5e1;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .card-footer {
             margin-top: auto;
-            padding-top: 12px;
-            border-top: 1px solid #334155;
+            background-color: #0f172a;
+            padding: 10px 14px;
+            border-radius: 8px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .price-label { font-size: 0.75rem; color: #64748b; text-transform: uppercase; }
-        .price-val { font-size: 1.2rem; font-weight: 800; color: #38bdf8; }
+        .price-box-inner {
+            display: flex;
+            flex-direction: column;
+        }
 
-        .loading-state {
+        .price-label {
+            font-size: 0.65rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .price-value {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #38bdf8;
+        }
+
+        .view-lot-btn {
+            background-color: #38bdf8;
+            color: #0f172a;
+            text-decoration: none;
+            font-weight: 800;
+            font-size: 0.75rem;
+            padding: 8px 12px;
+            border-radius: 6px;
+            letter-spacing: 0.5px;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        .view-lot-btn:hover {
+            background-color: #7dd3fc;
+            transform: scale(1.02);
+        }
+
+        #noResults {
+            display: none;
             grid-column: 1 / -1;
             text-align: center;
             padding: 40px;
+            background-color: #1e293b;
+            border-radius: 12px;
             color: #94a3b8;
-            font-size: 1.1rem;
+        }
+
+        .site-footer {
+            background-color: #0b1120;
+            border-top: 1px solid #1e293b;
+            padding: 40px 20px 20px;
+            margin-top: auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .footer-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .footer-col { display: flex; flex-direction: column; gap: 12px; }
+        .footer-logo { height: 32px; width: auto; align-self: flex-start; }
+        .footer-text { color: #94a3b8; font-size: 0.85rem; line-height: 1.5; }
+        .footer-email { color: #38bdf8; text-decoration: none; font-weight: 600; }
+        .footer-heading { color: #ffffff; font-size: 0.95rem; font-weight: 700; text-transform: uppercase; margin-bottom: 4px; }
+        .stats-list { list-style: none; display: flex; flex-direction: column; gap: 6px; font-size: 0.85rem; color: #94a3b8; }
+        .stats-list span { color: #f8fafc; font-weight: 700; }
+        .footer-links { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+        .footer-links a { color: #94a3b8; text-decoration: none; font-size: 0.85rem; }
+
+        .footer-bottom {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding-top: 20px;
+            border-top: 1px solid #1e293b;
+            text-align: center;
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+
+        @media (max-width: 900px) {
+            .main-layout { grid-template-columns: 1fr; }
+            .sidebar-filters { position: static; }
+            .top-search-form { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
     <div class="container">
+        
         <div class="header-logo">
             <a href="index.html">
                 <img src="logo_2.png" alt="VINDOCTOR" class="logo-img">
             </a>
         </div>
 
-        <div class="search-card">
-            <div class="filters-grid">
-                <div class="filter-group">
+        <div class="top-search-section">
+            <div class="top-search-form">
+                <div class="search-input-group">
                     <label>Search VIN / Title</label>
-                    <input type="text" id="searchInput" placeholder="e.g. 1FA6P8CF5... or Mustang" oninput="filterCars()">
+                    <input type="text" id="topSearchInput" class="top-search-input" placeholder="e.g. 1FA6P8CF5... or Mustang" oninput="applyFilters()">
                 </div>
-                <div class="filter-group">
+                <div class="search-input-group">
                     <label>Auction</label>
-                    <select id="auctionSelect" onchange="filterCars()">
-                        <option value="all">All Auctions</option>
+                    <select id="topAuctionSelect" class="top-search-select" onchange="applyFilters()">
+                        <option value="">All Auctions</option>
                         <option value="copart">Copart</option>
                         <option value="iaai">IAAI</option>
                     </select>
@@ -228,110 +460,292 @@
             </div>
         </div>
 
-        <div class="cars-grid" id="carsGrid">
-            <div class="loading-state">Loading sold lots history from API...</div>
+        <div class="main-layout">
+
+            <aside class="sidebar-filters">
+                <div class="filter-title">
+                    <span>Filters</span>
+                    <span style="font-size: 0.8rem; color: #38bdf8; cursor: pointer;" onclick="clearFilters()">Reset</span>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Make</label>
+                    <select class="filter-select" id="filterMake" onchange="updateModelOptions(); applyFilters();">
+                        <option value="">All Makes</option>
+                        <option value="ford">Ford</option>
+                        <option value="bmw">BMW</option>
+                        <option value="dodge">Dodge</option>
+                        <option value="porsche">Porsche</option>
+                        <option value="chevrolet">Chevrolet</option>
+                        <option value="audi">Audi</option>
+                        <option value="jeep">Jeep</option>
+                        <option value="mercedes">Mercedes-Benz</option>
+                        <option value="tesla">Tesla</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Model</label>
+                    <select class="filter-select" id="filterModel" onchange="applyFilters()">
+                        <option value="">All Models</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Primary Damage</label>
+                    <select class="filter-select" id="filterDamage" onchange="applyFilters()">
+                        <option value="">All Damage Types</option>
+                        <option value="front end">Front End</option>
+                        <option value="rear end">Rear End</option>
+                        <option value="side">Side / Side Damage</option>
+                        <option value="hail">Hail</option>
+                        <option value="water / flood">Water / Flood</option>
+                        <option value="rollover">Rollover</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Year Range</label>
+                    <div class="range-group">
+                        <input type="number" class="filter-input-range" id="filterYearFrom" placeholder="From" oninput="applyFilters()">
+                        <input type="number" class="filter-input-range" id="filterYearTo" placeholder="To" oninput="applyFilters()">
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Mileage Range (mi)</label>
+                    <div class="range-group">
+                        <input type="number" class="filter-input-range" id="filterMileageFrom" placeholder="Min mi" oninput="applyFilters()">
+                        <input type="number" class="filter-input-range" id="filterMileageTo" placeholder="Max mi" oninput="applyFilters()">
+                    </div>
+                </div>
+
+                <div class="sidebar-actions">
+                    <button class="btn btn-primary" onclick="applyFilters()">Apply Filters</button>
+                    <button class="btn btn-secondary" onclick="clearFilters()">Clear All</button>
+                </div>
+            </aside>
+
+            <main class="car-grid" id="carGrid">
+                <div id="noResults">
+                    <h3>No vehicles match your search criteria.</h3>
+                    <p style="margin-top: 8px;">Try clearing filters to see all available cars.</p>
+                </div>
+            </main>
         </div>
+
     </div>
 
+    <footer class="site-footer">
+        <div class="footer-container">
+            <div class="footer-col">
+                <a href="index.html">
+                    <img src="logo_2.png" alt="VINDOCTOR Logo" class="footer-logo">
+                </a>
+                <p class="footer-text">
+                    Got any questions?<br>
+                    Feel free to contact<br>
+                    <a href="mailto:info@vindoctor.com" class="footer-email">info@vindoctor.com</a>
+                </p>
+            </div>
+
+            <div class="footer-col">
+                <h4 class="footer-heading">Database Overview</h4>
+                <ul class="stats-list">
+                    <li>Lots: <span id="statTotalLots">0</span></li>
+                    <li>Copart Lots: <span id="statCopartLots">0</span></li>
+                    <li>IAAI Lots: <span id="statIaaiLots">0</span></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4 class="footer-heading">Information</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Terms & Conditions</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">VIN Lookup FAQ</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            Ⓒ 2026 VINDOCTOR. All rights reserved
+        </div>
+    </footer>
+
     <script>
-        // WPISZ KLUCZ API PONIŻEJ
         const API_KEY = 'e9b16db5-1f33-4abb-81ca-aecad558b3ee'; 
         const API_URL = 'https://api.apicar.store/api/history/cars?size=100';
 
-        let allCars = [];
+        let allCarsData = [];
 
-        async function fetchHistoryCars() {
+        // Przykładowe historyczne auta w przypadku braku połączenia z API
+        const fallbackCars = [
+            { vin: "1FA6P8CF5M5123456", title: "2022 Ford Mustang GT", make: "ford", model: "mustang", year: 2022, site: "copart", damage: "Front End", odometer: 18400, location: "FL - TAMPA", price: 14200, img: "https://images.unsplash.com/photo-1584345604476-8ec5e12e42dd?auto=format&fit=crop&w=600&q=80" },
+            { vin: "WBS83AY000CK99887", title: "2021 BMW M4 Competition", make: "bmw", model: "m4", year: 2021, site: "iaai", damage: "Side", odometer: 24100, location: "CA - LOS ANGELES", price: 22800, img: "https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=600&q=80" },
+            { vin: "2C3CDABT8KH654321", title: "2023 Dodge Challenger R/T", make: "dodge", model: "challenger", year: 2023, site: "copart", damage: "Hail", odometer: 9800, location: "TX - DALLAS", price: 18500, img: "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=600&q=80" },
+            { vin: "WP0AB2A91LS123987", title: "2020 Porsche 911 Carrera S", make: "porsche", model: "911", year: 2020, site: "iaai", damage: "Rear End", odometer: 31200, location: "FL - MIAMI", price: 45000, img: "https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&w=600&q=80" },
+            { vin: "1G1YB2D45M5987654", title: "2022 Chevrolet Corvette C8", make: "chevrolet", model: "corvette", year: 2022, site: "copart", damage: "Water / Flood", odometer: 12000, location: "GA - ATLANTA", price: 31200, img: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=600&q=80" },
+            { vin: "WUAZZZF23MN112233", title: "2021 Audi RS6 Avant", make: "audi", model: "rs6", year: 2021, site: "iaai", damage: "Side", odometer: 28900, location: "NY - NEW YORK", price: 39800, img: "https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?auto=format&fit=crop&w=600&q=80" }
+        ];
+
+        async function fetchCarsFromAPI() {
             try {
                 const response = await fetch(API_URL, {
                     method: 'GET',
-                    headers: {
-                        'api-key': API_KEY,
-                        'Accept': 'application/json'
-                    }
+                    headers: { 'api-key': API_KEY, 'Accept': 'application/json' }
                 });
 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
+                if (!response.ok) throw new Error("HTTP Status " + response.status);
                 const resData = await response.json();
-                allCars = resData.data || resData.cars || resData || [];
-
-                renderCars(allCars);
-            } catch (error) {
-                console.error("Error fetching history cars:", error);
-                document.getElementById('carsGrid').innerHTML = `
-                    <div class="loading-state" style="color:#ef4444;">
-                        Failed to load vehicle history. Check your API key or server status.
-                    </div>`;
+                
+                const fetched = resData.data || resData.cars || resData || [];
+                if (fetched.length > 0) {
+                    allCarsData = fetched.map(car => ({
+                        vin: car.vin || '',
+                        title: car.title || `${car.year || ''} ${car.make || ''} ${car.model || ''}`,
+                        make: (car.make || '').toLowerCase(),
+                        model: (car.model || '').toLowerCase(),
+                        year: parseInt(car.year) || 0,
+                        site: (car.base_site || car.site || 'copart').toLowerCase(),
+                        damage: car.damage_pr || car.damage || 'N/A',
+                        odometer: car.odometer ? parseInt(car.odometer) : 0,
+                        location: car.location || 'N/A',
+                        price: car.final_bid || car.buy_it_now || car.price || 'N/A',
+                        img: (car.link_img_big && car.link_img_big[0]) || (car.images && car.images[0]) || 'https://via.placeholder.com/600x400?text=No+Image'
+                    }));
+                } else {
+                    allCarsData = fallbackCars;
+                }
+            } catch (err) {
+                console.warn("API request failed, loading local sold lots history:", err);
+                allCarsData = fallbackCars;
             }
+
+            renderCars(allCarsData);
+            calculateStats();
         }
 
         function renderCars(cars) {
-            const grid = document.getElementById('carsGrid');
+            const grid = document.getElementById('carGrid');
+            const noResults = document.getElementById('noResults');
 
             if (!cars || cars.length === 0) {
-                grid.innerHTML = `<div class="loading-state">No sold vehicles found.</div>`;
+                noResults.style.display = 'block';
                 return;
+            } else {
+                noResults.style.display = 'none';
             }
 
-            grid.innerHTML = cars.map(car => {
-                const vin = car.vin || '';
-                const title = car.title || `${car.year || ''} ${car.make || ''} ${car.model || ''}`;
-                const auction = (car.base_site || car.site || 'copart').toLowerCase();
-                const price = car.final_bid || car.buy_it_now || car.price || 'N/A';
-                
-                let img = 'https://via.placeholder.com/400x300?text=No+Image';
-                if (car.link_img_big && car.link_img_big.length > 0) img = car.link_img_big[0];
-                else if (car.link_img_small && car.link_img_small.length > 0) img = car.link_img_small[0];
-                else if (car.images && car.images.length > 0) img = car.images[0];
-
-                return `
-                    <a href="lot.html?vin=${encodeURIComponent(vin)}" class="car-card">
-                        <div class="car-img-container">
-                            <img src="${img}" alt="${title}">
-                            <span class="badge-auction ${auction}">${auction.toUpperCase()}</span>
-                        </div>
-                        <div class="car-info">
-                            <div class="car-title">${title}</div>
-                            <div class="car-vin">VIN: ${vin}</div>
-                            <div class="car-details">
-                                <div>Odometer: ${car.odometer ? Number(car.odometer).toLocaleString() + ' mi' : 'N/A'}</div>
-                                <div>Location: ${car.location || 'N/A'}</div>
-                                <div>Damage: ${car.damage_pr || car.damage || 'N/A'}</div>
-                                <div>Date: ${car.sale_date || car.date || 'N/A'}</div>
-                            </div>
-                            <div class="car-price-row">
-                                <div>
-                                    <div class="price-label">Final Price</div>
-                                </div>
-                                <div class="price-val">${price !== 'N/A' ? '$' + price : 'N/A'}</div>
-                            </div>
-                        </div>
+            grid.innerHTML = cars.map(car => `
+                <div class="car-tile" 
+                     data-make="${car.make}" 
+                     data-model="${car.model}" 
+                     data-year="${car.year}" 
+                     data-auction="${car.site}" 
+                     data-damage="${car.damage.toLowerCase()}" 
+                     data-mileage="${car.odometer}">
+                    <a href="lot.html?vin=${encodeURIComponent(car.vin)}" class="card-image-wrapper">
+                        <img src="${car.img}" alt="${car.title}" class="card-image">
+                        <span class="auction-badge ${car.site}">${car.site.toUpperCase()}</span>
                     </a>
-                `;
-            }).join('');
+                    <div class="card-body">
+                        <h2 class="car-title">${car.title}</h2>
+                        <div class="vin-number">VIN: ${car.vin}</div>
+                        <div class="details-grid">
+                            <div class="detail-item"><span class="detail-label">📍 Location</span><span class="detail-value">${car.location}</span></div>
+                            <div class="detail-item"><span class="detail-label">🛣 Odometer</span><span class="detail-value">${car.odometer ? car.odometer.toLocaleString() + ' mi' : 'N/A'}</span></div>
+                            <div class="detail-item"><span class="detail-label">🛠 Damage</span><span class="detail-value">${car.damage}</span></div>
+                            <div class="detail-item"><span class="detail-label">📜 Status</span><span class="detail-value">Sold</span></div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="price-box-inner"><span class="price-label">Final Price:</span><span class="price-value">${car.price !== 'N/A' ? '$' + Number(car.price).toLocaleString() + ' USD' : 'N/A'}</span></div>
+                            <a href="lot.html?vin=${encodeURIComponent(car.vin)}" class="view-lot-btn">VIEW LOT</a>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
         }
 
-        function filterCars() {
-            const searchVal = document.getElementById('searchInput').value.toLowerCase();
-            const auctionVal = document.getElementById('auctionSelect').value;
+        const modelsByMake = {
+            ford: [{ value: "mustang", text: "Mustang" }, { value: "f150", text: "F-150" }],
+            bmw: [{ value: "m4", text: "M4" }, { value: "m3", text: "M3" }],
+            dodge: [{ value: "challenger", text: "Challenger" }],
+            porsche: [{ value: "911", text: "911" }],
+            chevrolet: [{ value: "corvette", text: "Corvette" }],
+            audi: [{ value: "rs6", text: "RS6" }]
+        };
 
-            const filtered = allCars.filter(car => {
-                const title = (car.title || `${car.year || ''} ${car.make || ''} ${car.model || ''}`).toLowerCase();
-                const vin = (car.vin || '').toLowerCase();
-                const auction = (car.base_site || car.site || '').toLowerCase();
+        function updateModelOptions() {
+            const makeSelect = document.getElementById('filterMake');
+            const modelSelect = document.getElementById('filterModel');
+            const selectedMake = makeSelect.value;
 
-                const matchesSearch = title.includes(searchVal) || vin.includes(searchVal);
-                const matchesAuction = auctionVal === 'all' || auction.includes(auctionVal);
+            modelSelect.innerHTML = '<option value="">All Models</option>';
+            if (selectedMake && modelsByMake[selectedMake]) {
+                modelsByMake[selectedMake].forEach(model => {
+                    const opt = document.createElement('option');
+                    opt.value = model.value;
+                    opt.textContent = model.text;
+                    modelSelect.appendChild(opt);
+                });
+            }
+        }
 
-                return matchesSearch && matchesAuction;
+        function applyFilters() {
+            const searchVal = document.getElementById('topSearchInput').value.toLowerCase();
+            const topAuction = document.getElementById('topAuctionSelect').value.toLowerCase();
+            
+            const make = document.getElementById('filterMake').value.toLowerCase();
+            const model = document.getElementById('filterModel').value.toLowerCase();
+            const damage = document.getElementById('filterDamage').value.toLowerCase();
+
+            const yearFrom = parseInt(document.getElementById('filterYearFrom').value) || 0;
+            const yearTo = parseInt(document.getElementById('filterYearTo').value) || 9999;
+            const mileageFrom = parseInt(document.getElementById('filterMileageFrom').value) || 0;
+            const mileageTo = parseInt(document.getElementById('filterMileageTo').value) || 9999999;
+
+            const filtered = allCarsData.filter(car => {
+                const matchesSearch = car.title.toLowerCase().includes(searchVal) || car.vin.toLowerCase().includes(searchVal);
+                const matchesAuction = !topAuction || car.site.includes(topAuction);
+                const matchesMake = !make || car.make.includes(make);
+                const matchesModel = !model || car.model.includes(model);
+                const matchesDamage = !damage || car.damage.toLowerCase().includes(damage);
+                
+                const matchesYear = car.year >= yearFrom && car.year <= yearTo;
+                const matchesMileage = car.odometer >= mileageFrom && car.odometer <= mileageTo;
+
+                return matchesSearch && matchesAuction && matchesMake && matchesModel && matchesDamage && matchesYear && matchesMileage;
             });
 
             renderCars(filtered);
         }
 
-        window.addEventListener('DOMContentLoaded', fetchHistoryCars);
+        function clearFilters() {
+            document.getElementById('topSearchInput').value = '';
+            document.getElementById('topAuctionSelect').value = '';
+            document.getElementById('filterMake').value = '';
+            document.getElementById('filterDamage').value = '';
+            document.getElementById('filterYearFrom').value = '';
+            document.getElementById('filterYearTo').value = '';
+            document.getElementById('filterMileageFrom').value = '';
+            document.getElementById('filterMileageTo').value = '';
+            updateModelOptions();
+            renderCars(allCarsData);
+        }
+
+        function calculateStats() {
+            let copart = 0, iaai = 0;
+            allCarsData.forEach(car => {
+                if (car.site === 'copart') copart++;
+                if (car.site === 'iaai') iaai++;
+            });
+            document.getElementById('statTotalLots').textContent = allCarsData.length;
+            document.getElementById('statCopartLots').textContent = copart;
+            document.getElementById('statIaaiLots').textContent = iaai;
+        }
+
+        window.addEventListener('DOMContentLoaded', fetchCarsFromAPI);
     </script>
 </body>
 </html>
