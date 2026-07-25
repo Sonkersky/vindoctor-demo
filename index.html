@@ -235,10 +235,6 @@
             transition: transform 0.2s, box-shadow 0.2s;
         }
 
-        .car-tile.hidden {
-            display: none !important;
-        }
-
         .car-tile:hover {
             transform: translateY(-4px);
             box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.6);
@@ -574,13 +570,14 @@
     </footer>
 
     <script>
+        // Pamiętaj o podaniu swojego aktywnego klucza API, jeżeli korzystasz z płatnej usługi.
         const API_KEY = 'e9b16db5-1f33-4abb-81ca-aecad558b3ee'; 
         const API_URL = 'https://api.apicar.store/api/history/cars?size=100';
 
         let allCarsData = [];
 
-        // Przykładowe historyczne auta w przypadku braku połączenia z API
-        const fallbackCars = [
+        // Awaryjna baza danych (wyświetla auta ze zrzutu ekranu w razie braku połączenia/błędu API)
+        const defaultFallbackCars = [
             { vin: "1FA6P8CF5M5123456", title: "2022 Ford Mustang GT", make: "ford", model: "mustang", year: 2022, site: "copart", damage: "Front End", odometer: 18400, location: "FL - TAMPA", price: 14200, img: "https://images.unsplash.com/photo-1584345604476-8ec5e12e42dd?auto=format&fit=crop&w=600&q=80" },
             { vin: "WBS83AY000CK99887", title: "2021 BMW M4 Competition", make: "bmw", model: "m4", year: 2021, site: "iaai", damage: "Side", odometer: 24100, location: "CA - LOS ANGELES", price: 22800, img: "https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=600&q=80" },
             { vin: "2C3CDABT8KH654321", title: "2023 Dodge Challenger R/T", make: "dodge", model: "challenger", year: 2023, site: "copart", damage: "Hail", odometer: 9800, location: "TX - DALLAS", price: 18500, img: "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=600&q=80" },
@@ -589,21 +586,31 @@
             { vin: "WUAZZZF23MN112233", title: "2021 Audi RS6 Avant", make: "audi", model: "rs6", year: 2021, site: "iaai", damage: "Side", odometer: 28900, location: "NY - NEW YORK", price: 39800, img: "https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?auto=format&fit=crop&w=600&q=80" }
         ];
 
-        async function fetchCarsFromAPI() {
+        async function loadCars() {
             try {
                 const response = await fetch(API_URL, {
                     method: 'GET',
-                    headers: { 'api-key': API_KEY, 'Accept': 'application/json' }
+                    headers: { 
+                        'api-key': API_KEY, 
+                        'Accept': 'application/json' 
+                    }
                 });
 
-                if (!response.ok) throw new Error("HTTP Status " + response.status);
+                if (!response.ok) {
+                    throw new Error(`API response status: ${response.status}`);
+                }
+
                 const resData = await response.json();
                 
-                const fetched = resData.data || resData.cars || resData || [];
-                if (fetched.length > 0) {
-                    allCarsData = fetched.map(car => ({
-                        vin: car.vin || '',
-                        title: car.title || `${car.year || ''} ${car.make || ''} ${car.model || ''}`,
+                // Obsługa różnych struktur danych zwracanych przez API
+                const fetchedList = Array.isArray(resData) 
+                    ? resData 
+                    : (resData.data || resData.cars || resData.results || []);
+
+                if (fetchedList && fetchedList.length > 0) {
+                    allCarsData = fetchedList.map(car => ({
+                        vin: car.vin || 'N/A',
+                        title: car.title || `${car.year || ''} ${car.make || ''} ${car.model || ''}`.trim(),
                         make: (car.make || '').toLowerCase(),
                         model: (car.model || '').toLowerCase(),
                         year: parseInt(car.year) || 0,
@@ -612,14 +619,16 @@
                         odometer: car.odometer ? parseInt(car.odometer) : 0,
                         location: car.location || 'N/A',
                         price: car.final_bid || car.buy_it_now || car.price || 'N/A',
-                        img: (car.link_img_big && car.link_img_big[0]) || (car.images && car.images[0]) || 'https://via.placeholder.com/600x400?text=No+Image'
+                        img: (car.link_img_big && car.link_img_big[0]) 
+                             || (car.images && car.images[0]) 
+                             || 'https://via.placeholder.com/600x400?text=No+Image'
                     }));
                 } else {
-                    allCarsData = fallbackCars;
+                    allCarsData = defaultFallbackCars;
                 }
-            } catch (err) {
-                console.warn("API request failed, loading local sold lots history:", err);
-                allCarsData = fallbackCars;
+            } catch (error) {
+                console.warn("Połączenie z zewnętrznym API nie powiodło się, ładowanie zintegrowanych danych:", error);
+                allCarsData = defaultFallbackCars;
             }
 
             renderCars(allCarsData);
@@ -638,15 +647,9 @@
             }
 
             grid.innerHTML = cars.map(car => `
-                <div class="car-tile" 
-                     data-make="${car.make}" 
-                     data-model="${car.model}" 
-                     data-year="${car.year}" 
-                     data-auction="${car.site}" 
-                     data-damage="${car.damage.toLowerCase()}" 
-                     data-mileage="${car.odometer}">
+                <div class="car-tile">
                     <a href="lot.html?vin=${encodeURIComponent(car.vin)}" class="card-image-wrapper">
-                        <img src="${car.img}" alt="${car.title}" class="card-image">
+                        <img src="${car.img}" alt="${car.title}" class="card-image" onerror="this.src='https://via.placeholder.com/600x400?text=No+Image'">
                         <span class="auction-badge ${car.site}">${car.site.toUpperCase()}</span>
                     </a>
                     <div class="card-body">
@@ -693,7 +696,7 @@
         }
 
         function applyFilters() {
-            const searchVal = document.getElementById('topSearchInput').value.toLowerCase();
+            const searchVal = document.getElementById('topSearchInput').value.toLowerCase().trim();
             const topAuction = document.getElementById('topAuctionSelect').value.toLowerCase();
             
             const make = document.getElementById('filterMake').value.toLowerCase();
@@ -706,7 +709,7 @@
             const mileageTo = parseInt(document.getElementById('filterMileageTo').value) || 9999999;
 
             const filtered = allCarsData.filter(car => {
-                const matchesSearch = car.title.toLowerCase().includes(searchVal) || car.vin.toLowerCase().includes(searchVal);
+                const matchesSearch = !searchVal || car.title.toLowerCase().includes(searchVal) || car.vin.toLowerCase().includes(searchVal);
                 const matchesAuction = !topAuction || car.site.includes(topAuction);
                 const matchesMake = !make || car.make.includes(make);
                 const matchesModel = !model || car.model.includes(model);
@@ -745,7 +748,7 @@
             document.getElementById('statIaaiLots').textContent = iaai;
         }
 
-        window.addEventListener('DOMContentLoaded', fetchCarsFromAPI);
+        window.addEventListener('DOMContentLoaded', loadCars);
     </script>
 </body>
 </html>
