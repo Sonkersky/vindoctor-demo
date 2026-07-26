@@ -1,0 +1,1466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vehicle Auction Details - VINDOCTOR</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #0f172a;
+            color: #f8fafc;
+            padding: 20px;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        /* TŁO PORTU JAK NA STRONIE GŁÓWNEJ */
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 600px;
+            background-image: url('https://images.unsplash.com/photo-1590497008432-598f04441de8?q=80&w=4091&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center top;
+            background-repeat: no-repeat;
+            opacity: 0.45;
+            filter: contrast(110%) brightness(90%);
+            -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 100%);
+            mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 100%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* HEADER & LOGO GRAFICZNE (ZMNIEJSZONE) */
+        .header-logo {
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .logo {
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        .logo-img {
+            height: 40px; /* Zmniejszone z 55px */
+            width: auto;
+            display: block;
+            margin: 0 auto;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
+            transition: transform 0.2s ease;
+        }
+
+        .logo-img:hover {
+            transform: scale(1.02);
+        }
+
+        /* TOP NAVIGATION BAR */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 16px;
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 12px 20px;
+            border-radius: 10px;
+            border: 1px solid #334155;
+        }
+
+        .back-link {
+            color: #38bdf8;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .back-link:hover { text-decoration: underline; }
+
+        .claim-btn {
+            background-color: #ef4444;
+            color: #ffffff;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            letter-spacing: 0.5px;
+            transition: background-color 0.2s;
+            text-transform: uppercase;
+        }
+
+        .claim-btn:hover { background-color: #dc2626; }
+
+        /* CAR HEADER */
+        .car-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 24px;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .car-title-main {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1.1;
+        }
+
+        .vin-pill {
+            display: inline-block;
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-family: monospace;
+            color: #94a3b8;
+            font-size: 0.95rem;
+            margin-top: 8px;
+        }
+
+        .auction-badge {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 800;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .auction-badge.copart { background-color: #0053a0; color: #ffffff; }
+        .auction-badge.iaai { background-color: #dc2626; color: #ffffff; }
+
+        /* TWO COLUMN LAYOUT */
+        .details-layout {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 32px;
+            margin-bottom: 32px;
+        }
+
+        @media (max-width: 900px) {
+            .details-layout { grid-template-columns: 1fr; }
+        }
+
+        /* GALLERY SECTION */
+        .gallery-section {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .main-image-container {
+            position: relative;
+            width: 100%;
+            height: 420px;
+            background-color: #1e293b;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #334155;
+        }
+
+        .main-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .main-360-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background-color: #000;
+        }
+
+        .main-video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background-color: #000;
+        }
+
+        .open-360-link {
+            position: absolute;
+            bottom: 12px;
+            left: 12px;
+            background-color: rgba(15, 23, 42, 0.85);
+            border: 1px solid #38bdf8;
+            color: #38bdf8;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 7px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            z-index: 4;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .open-360-link:hover {
+            background-color: #38bdf8;
+            color: #0f172a;
+        }
+
+        .nav-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(15, 23, 42, 0.7);
+            color: #ffffff;
+            border: 1px solid #334155;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            user-select: none;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+
+        .nav-arrow:hover {
+            background-color: rgba(56, 189, 248, 0.9);
+            color: #0f172a;
+            border-color: #38bdf8;
+        }
+
+        .nav-arrow.prev { left: 12px; }
+        .nav-arrow.next { right: 12px; }
+
+        .thumbnails-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+        }
+
+        .thumb {
+            height: 80px;
+            background-color: #1e293b;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        .thumb.active, .thumb:hover { border-color: #38bdf8; }
+        .thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* PRZYCISK POBIERANIA WSZYSTKICH ZDJĘĆ (ZIP) */
+        .gallery-toolbar {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .download-zip-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            color: #cbd5e1;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: border-color 0.2s, color 0.2s;
+        }
+
+        .download-zip-btn:hover {
+            border-color: #38bdf8;
+            color: #ffffff;
+        }
+
+        .download-zip-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* PRICE BOX & SPECS */
+        .info-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .price-box {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 2px solid #38bdf8;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .price-box .label { font-size: 0.85rem; color: #94a3b8; text-transform: uppercase; font-weight: 700; }
+        .price-box .amount { font-size: 2.2rem; font-weight: 800; color: #38bdf8; }
+
+        .price-box-top {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .sale-status-pill {
+            display: inline-block;
+            align-self: flex-start;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background-color: #334155;
+            color: #cbd5e1;
+        }
+
+        .sale-status-pill.status-sold { background-color: rgba(34, 197, 94, 0.15); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.4); }
+        .sale-status-pill.status-not-sold { background-color: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.4); }
+        .sale-status-pill.status-approval { background-color: rgba(234, 179, 8, 0.15); color: #eab308; border: 1px solid rgba(234, 179, 8, 0.4); }
+
+        /* Kolorowanie krytycznych statusów dokumentu (punkt 4 listy) */
+        .spec-value.doc-destructive {
+            color: #ef4444;
+            font-weight: 800;
+        }
+
+        /* Kolorowanie sprzedawcy typu Dealer / Non-Insurance (punkt 4 listy) */
+        .spec-value.seller-flagged {
+            color: #f97316;
+            font-weight: 800;
+        }
+
+        .specs-card {
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .specs-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 16px;
+            color: #ffffff;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 8px;
+        }
+
+        .specs-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px 20px;
+        }
+
+        .spec-item { display: flex; flex-direction: column; }
+        .spec-label { font-size: 0.75rem; color: #64748b; text-transform: uppercase; font-weight: 700; }
+        .spec-value { font-size: 0.95rem; color: #cbd5e1; font-weight: 600; margin-top: 2px; }
+        .highlight-green { color: #22c55e; }
+
+        /* VIN HISTORY SECTION */
+        .history-section {
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .history-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .history-badge-count {
+            background-color: #0f172a;
+            color: #38bdf8;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            border: 1px solid #334155;
+        }
+
+        .history-table { width: 100%; border-collapse: collapse; text-align: left; }
+        .history-table th {
+            background-color: #0f172a;
+            color: #64748b;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            padding: 12px 16px;
+            border-bottom: 1px solid #334155;
+        }
+        .history-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #334155;
+            font-size: 0.9rem;
+            color: #e2e8f0;
+        }
+        .history-table tr:last-child td { border-bottom: none; }
+        .price-past { font-weight: 700; color: #38bdf8; }
+
+        /* SIMILAR LOTS SECTION */
+        .similar-lots-section {
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 24px;
+            margin-top: 32px;
+        }
+
+        .similar-lots-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .similar-lots-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 16px;
+        }
+
+        .similar-lot-card {
+            background-color: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            overflow: hidden;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .similar-lot-card:hover {
+            transform: translateY(-3px);
+            border-color: #38bdf8;
+        }
+
+        .similar-lot-img {
+            width: 100%;
+            height: 130px;
+            object-fit: cover;
+            background-color: #1e293b;
+        }
+
+        .similar-lot-body {
+            padding: 10px 12px;
+        }
+
+        .similar-lot-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #f8fafc;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .similar-lot-meta {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+
+        .similar-lot-price {
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: #38bdf8;
+            margin-top: 6px;
+        }
+
+        .similar-lots-empty {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        /* MODAL POPUP STYLES */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(6px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            max-width: 580px;
+            width: 100%;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: relative;
+        }
+
+        .modal-text {
+            font-size: 0.95rem;
+            color: #cbd5e1;
+            line-height: 1.5;
+        }
+
+        .modal-warning-title {
+            font-size: 0.9rem;
+            font-weight: 800;
+            color: #ef4444;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 5px;
+        }
+
+        .modal-list {
+            list-style-type: disc;
+            margin-left: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        .modal-checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-top: 10px;
+            background-color: #0f172a;
+            padding: 14px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+        }
+
+        .modal-checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #38bdf8;
+            margin-top: 2px;
+            cursor: pointer;
+        }
+
+        .modal-checkbox-group label {
+            font-size: 0.9rem;
+            color: #e2e8f0;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .modal-btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .modal-btn-secondary {
+            background-color: transparent;
+            color: #94a3b8;
+            border: 1px solid #334155;
+        }
+
+        .modal-btn-secondary:hover {
+            background-color: #334155;
+            color: #ffffff;
+        }
+
+        .modal-btn-primary {
+            background: linear-gradient(135deg, #38bdf8, #0284c7);
+            color: #0f172a;
+            border: none;
+            box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
+        }
+
+        .modal-btn-primary:hover {
+            box-shadow: 0 4px 16px rgba(56, 189, 248, 0.5);
+            transform: translateY(-1px);
+        }
+
+        .modal-btn-primary.disabled {
+            background: #334155 !important;
+            color: #64748b !important;
+            cursor: not-allowed !important;
+            box-shadow: none !important;
+            transform: none !important;
+        }
+        /* ===== FOOTER (spójna z index.html) ===== */
+        .site-footer {
+            background-color: #0b1120;
+            border-top: 1px solid #1e293b;
+            padding: 40px 20px 20px;
+            margin-top: 40px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .footer-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .footer-col {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .footer-logo {
+            height: 32px;
+            width: auto;
+            align-self: flex-start;
+        }
+
+        .footer-text {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+
+        .footer-email {
+            color: #38bdf8;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .footer-email:hover {
+            text-decoration: underline;
+        }
+
+        .footer-heading {
+            color: #ffffff;
+            font-size: 0.95rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .stats-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-size: 0.85rem;
+            color: #94a3b8;
+        }
+
+        .stats-list span {
+            color: #f8fafc;
+            font-weight: 700;
+        }
+
+        .footer-links {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .footer-links a {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: #38bdf8;
+        }
+
+        .footer-bottom {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding-top: 20px;
+            border-top: 1px solid #1e293b;
+            text-align: center;
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+
+        /* ===== WATERMARK NA ZDJĘCIACH ===== */
+        .img-watermark {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            opacity: 0.35;
+            pointer-events: none;
+            user-select: none;
+            z-index: 3;
+        }
+
+        .main-image-container .img-watermark {
+            width: 90px;
+            height: auto;
+            object-fit: contain;
+        }
+
+        .thumb {
+            position: relative;
+        }
+
+        .thumb .img-watermark {
+            width: 26px;
+            height: auto;
+            object-fit: contain;
+            bottom: 4px;
+            right: 4px;
+        }
+
+        .thumb-badge {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.6rem;
+            font-weight: 800;
+            letter-spacing: 0.3px;
+            z-index: 3;
+            color: #ffffff;
+        }
+
+        .thumb-badge.badge-360 { background-color: rgba(56, 189, 248, 0.9); }
+        .thumb-badge.badge-video { background-color: rgba(239, 68, 68, 0.9); }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <!-- HEADER & LOGO -->
+        <div class="header-logo">
+            <a href="index.html" class="logo">
+                <img src="logo_2.png" alt="VINDOCTOR" class="logo-img">
+            </a>
+        </div>
+
+        <!-- TOP BAR (BACK + CLAIM LOT) -->
+        <div class="top-bar">
+            <a href="index.html" class="back-link">← Back to listings</a>
+            <button class="claim-btn" onclick="openClaimModal()">Claim This Lot</button>
+        </div>
+
+        <!-- CAR HEADER -->
+        <div class="car-header">
+            <div>
+                <h1 class="car-title-main" id="carTitle">2022 Ford Mustang GT</h1>
+                <div class="vin-pill" id="carVin">VIN: 1FA6P8CF5M5123456</div>
+            </div>
+            <span class="auction-badge copart" id="carAuctionBadge">COPART</span>
+        </div>
+
+        <!-- LAYOUT: GALLERY + SPECS -->
+        <div class="details-layout">
+
+            <!-- GALLERY -->
+            <div class="gallery-section">
+                <div class="main-image-container">
+                    <button class="nav-arrow prev" onclick="prevImage()">❮</button>
+                    <img id="mainImage" src="" alt="Main Image">
+                    <iframe id="main360Frame" class="main-360-frame" style="display:none;" allowfullscreen title="360 view"></iframe>
+                    <video id="mainVideo" class="main-video" style="display:none;" controls playsinline></video>
+                    <a id="open360Link" class="open-360-link" href="#" target="_blank" rel="noopener" style="display:none;">Open Interactive 360° View ↗</a>
+                    <img src="logo_2.png" alt="" class="img-watermark">
+                    <button class="nav-arrow next" onclick="nextImage()">❯</button>
+                </div>
+
+                <div class="gallery-toolbar">
+                    <button class="download-zip-btn" id="downloadZipBtn" onclick="downloadAllPhotos()">📦 Download All Photos (ZIP)</button>
+                </div>
+
+                <div class="thumbnails-grid" id="thumbsGrid"></div>
+            </div>
+
+            <!-- PRICE & SPECS -->
+            <div class="info-section">
+                
+                <div class="price-box">
+                    <div class="price-box-top">
+                        <span class="sale-status-pill" id="saleStatusPill">Sold</span>
+                        <div class="label">Final Auction Price</div>
+                        <div style="font-size: 0.75rem; color: #64748b;">Winning Bid</div>
+                    </div>
+                    <div class="amount" id="carPrice">$14,200 USD</div>
+                </div>
+
+                <div class="specs-card">
+                    <h3>Vehicle Specifications</h3>
+                    
+                    <div class="specs-list">
+                        <div class="spec-item">
+                            <span class="spec-label">Location</span>
+                            <span class="spec-value" id="specLocation">FL - TAMPA</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">Sale Date</span>
+                            <span class="spec-value" id="specDate">07/25/2026</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">Engine Status</span>
+                            <span class="spec-value highlight-green" id="specStatus">Run & Drive</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">Primary Damage</span>
+                            <span class="spec-value" id="specDamage">Front End</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">Sale Document</span>
+                            <span class="spec-value" id="specDoc">Clean Title</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">Odometer</span>
+                            <span class="spec-value" id="specOdometer">34,120 mi (ACTUAL)</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">Transmission</span>
+                            <span class="spec-value" id="specTransmission">Automatic</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">Seller</span>
+                            <span class="spec-value" id="specSeller">Insurance Corp</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- VIN SALES HISTORY -->
+        <div class="history-section">
+            <div class="history-title">
+                🕒 Sales History (VIN History)
+                <span class="history-badge-count" id="historyCount">Records found: 0</span>
+            </div>
+
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Auction Date</th>
+                        <th>Auction House</th>
+                        <th>Status</th>
+                        <th>Final Price</th>
+                    </tr>
+                </thead>
+                <tbody id="historyTableBody">
+                </tbody>
+            </table>
+        </div>
+
+        <!-- SIMILAR LOTS -->
+        <div class="similar-lots-section" id="similarLotsSection" style="display:none;">
+            <div class="similar-lots-title">🚘 Similar Lots</div>
+            <div class="similar-lots-grid" id="similarLotsGrid"></div>
+        </div>
+
+    </div>
+
+    <!-- STOPKA / FOOTER -->
+    <footer class="site-footer">
+        <div class="footer-container">
+            <!-- COL 1: LOGO & CONTACT -->
+            <div class="footer-col">
+                <a href="index.html">
+                    <img src="logo_2.png" alt="VINDOCTOR Logo" class="footer-logo">
+                </a>
+                <p class="footer-text">
+                    Got any questions?<br>
+                    Feel free to contact<br>
+                    <a href="mailto:info@vindoctor.com" class="footer-email">info@vindoctor.com</a>
+                </p>
+            </div>
+
+            <!-- COL 2: LEGAL & LINKS -->
+            <div class="footer-col">
+                <h4 class="footer-heading">Information</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Terms & Conditions</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">VIN Lookup FAQ</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            Ⓒ 2026 VINDOCTOR. All rights reserved
+        </div>
+    </footer>
+
+    <!-- CLAIM POPUP MODAL -->
+    <div class="modal-overlay" id="claimModal" onclick="handleOverlayClick(event)">
+
+        <div class="modal-content">
+            <div class="modal-text">
+                We do respect privacy rights of every person. Therefore if you do not want to show the lot you have purchased on our website, you can hide it.
+            </div>
+
+            <div class="modal-warning-title">PLEASE BE AWARE THAT IT IS PROHIBITED TO:</div>
+            
+            <ul class="modal-list">
+                <li>Hide lot if you want to avoid the right tax calculation;</li>
+                <li>Hide lot for hiding damage and odometer information from the future buyers;</li>
+                <li>Hide lot for misinformation, misrepresentation, fraud or other illegal activity;</li>
+            </ul>
+
+            <div class="modal-checkbox-group">
+                <input type="checkbox" id="acceptCheckbox" onchange="toggleNextButton()">
+                <label for="acceptCheckbox">I have read and accept the limitations stated above</label>
+            </div>
+
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-secondary" onclick="closeClaimModal()">Cancel</button>
+                <button class="modal-btn modal-btn-primary disabled" id="nextStepBtn" onclick="handleNextStep()" disabled>Next step</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPT -->
+    <script>
+        // ====== CONFIG (musi być identyczne jak w index.html) ======
+        const API_BASE = 'https://api.apicar.store/api';
+        const API_KEY = 'WKLEJ_TUTAJ_SWOJ_TOKEN'; // <-- wstaw swój token z apicar.store
+
+        let currentCarImages = [];
+        let galleryItems = []; // pełna galeria: zdjęcia + 360° + wideo
+        let currentIndex = 0;
+        let currentVin = '';
+
+        // ====== API CALL ======
+        async function fetchCarByVin(vin) {
+            const query = new URLSearchParams({ vin });
+            const res = await fetch(`${API_BASE}/history-cars/vin?${query.toString()}`, {
+                method: 'GET',
+                headers: {
+                    'api-key': API_KEY,
+                    'accept': 'application/json'
+                }
+            });
+
+            if (!res.ok) {
+                throw new Error(`API responded with status ${res.status}`);
+            }
+
+            const result = await res.json();
+            // API może zwrócić pojedynczy obiekt albo { data: {...} } / { data: [...] }
+            if (Array.isArray(result)) return result[0] || null;
+            if (Array.isArray(result.data)) return result.data[0] || null;
+            if (result.data) return result.data;
+            return result;
+        }
+
+        function formatPrice(value) {
+            if (value === null || value === undefined) return 'N/A';
+            return `$${Number(value).toLocaleString('en-US')} USD`;
+        }
+
+        function formatDate(isoString) {
+            if (!isoString) return 'N/A';
+            const d = new Date(isoString);
+            if (isNaN(d.getTime())) return isoString;
+            return d.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
+        }
+
+        function showError(message) {
+            document.getElementById('carTitle').innerText = message;
+            document.getElementById('carVin').innerText = '';
+            document.querySelector('.details-layout').style.display = 'none';
+            document.querySelector('.history-section').style.display = 'none';
+        }
+
+        // ====== MAIN LOAD ======
+        async function initPage() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const vin = urlParams.get('vin');
+
+            if (!vin) {
+                showError('No VIN provided.');
+                return;
+            }
+
+            document.getElementById('carTitle').innerText = 'Loading...';
+
+            let car;
+            try {
+                car = await fetchCarByVin(vin);
+            } catch (err) {
+                console.error('Failed to load lot:', err);
+                showError('Failed to load vehicle data. Please check your connection or API token.');
+                return;
+            }
+
+            if (!car) {
+                showError('Vehicle not found for this VIN.');
+                return;
+            }
+
+            const site = car.base_site === 'iaai' ? 'iaai' : 'copart';
+            const title = car.title || `${car.year || ''} ${car.make || ''} ${car.model || ''}`.trim();
+
+            document.title = `${title} - VINDOCTOR`;
+            document.getElementById('carTitle').innerText = title;
+            document.getElementById('carVin').innerText = `VIN: ${car.vin || vin}`;
+            currentVin = car.vin || vin;
+
+            const badge = document.getElementById('carAuctionBadge');
+            badge.innerText = site.toUpperCase();
+            badge.className = `auction-badge ${site}`;
+
+            document.getElementById('carPrice').innerText = formatPrice(car.purchase_price ?? car.cost_priced);
+            document.getElementById('specLocation').innerText = car.location || car.state || 'N/A';
+            document.getElementById('specDate').innerText = formatDate(car.sale_date);
+            document.getElementById('specStatus').innerText = car.status || 'N/A';
+            document.getElementById('specDamage').innerText = car.damage_pr || 'N/A';
+            document.getElementById('specDoc').innerText = car.document || 'N/A';
+            document.getElementById('specSeller').innerText = car.seller || 'N/A';
+
+            // ====== SALE STATUS PILL (punkt 3 listy) ======
+            // Uwaga: nazwa pola nie jest w 100% potwierdzona w dokumentacji API —
+            // sprawdź w konsoli (console.log(car)) czy to faktycznie "sale_status".
+            // Jeśli pole ma inną nazwę, wystarczy podmienić poniższą linię.
+            renderSaleStatus(car.sale_status || (car.sale_history && car.sale_history[0] && car.sale_history[0].sale_status));
+
+            // ====== KOLOROWANIE (punkt 4 listy) ======
+            // "Sale Document" (title status) — czerwony dla statusów oznaczających
+            // pojazd nienadający się do rejestracji/na części.
+            applyDocumentColor(car.document);
+
+            // Seller — pomarańczowo/bordowo dla Dealer / Non-Insurance
+            applySellerColor(car.seller_type);
+
+            if (car.odometer != null) {
+                const unit = car.odometer_index || 'mi';
+                const brand = car.odobrand ? ` (${car.odobrand.toUpperCase()})` : '';
+                document.getElementById('specOdometer').innerText = `${Number(car.odometer).toLocaleString('en-US')} ${unit}${brand}`;
+            } else {
+                document.getElementById('specOdometer').innerText = 'N/A';
+            }
+            document.getElementById('specTransmission').innerText = car.transmission || 'N/A';
+
+            currentCarImages = (car.link_img_hd && car.link_img_hd.length ? car.link_img_hd : car.link_img_small) || [];
+            if (currentCarImages.length === 0) {
+                currentCarImages = ['https://placehold.co/1000x700/1e293b/94a3b8?text=No+Image'];
+            }
+
+            galleryItems = buildGalleryItems(car);
+            currentIndex = 0;
+            renderGallery();
+
+            renderHistory(car.sale_history || []);
+
+            if (car.make && car.model) {
+                loadSimilarLots(car.make, car.model, currentVin);
+            }
+        }
+
+        // ====== SIMILAR LOTS (punkt 5 listy) ======
+        async function loadSimilarLots(make, model, excludeVin) {
+            const section = document.getElementById('similarLotsSection');
+            const grid = document.getElementById('similarLotsGrid');
+
+            try {
+                const params = new URLSearchParams({
+                    make: make,
+                    model: model,
+                    sale_status: 'sold',
+                    sort: 'sale_date',
+                    direction: 'desc',
+                    page: 1,
+                    size: 8
+                });
+
+                const res = await fetch(`${API_BASE}/history-cars?${params.toString()}`, {
+                    method: 'GET',
+                    headers: {
+                        'api-key': API_KEY,
+                        'accept': 'application/json'
+                    }
+                });
+
+                if (!res.ok) throw new Error(`API responded with status ${res.status}`);
+
+                const result = await res.json();
+                let cars = Array.isArray(result) ? result : (result.data || []);
+
+                // Wyklucz bieżący VIN i ogranicz do 6 kafelków
+                cars = cars.filter(c => (c.vin || '') !== excludeVin).slice(0, 6);
+
+                if (cars.length === 0) {
+                    section.style.display = 'block';
+                    grid.innerHTML = '<div class="similar-lots-empty">No similar lots found right now.</div>';
+                    return;
+                }
+
+                section.style.display = 'block';
+                grid.innerHTML = cars.map(similarLotCardHTML).join('');
+            } catch (err) {
+                console.error('Failed to load similar lots:', err);
+                // Cicho ukrywamy sekcję, jeśli zapytanie się nie powiedzie
+                section.style.display = 'none';
+            }
+        }
+
+        function similarLotCardHTML(car) {
+            const img = (car.link_img_small && car.link_img_small[0])
+                || (car.link_img_hd && car.link_img_hd[0])
+                || 'https://placehold.co/400x300/1e293b/94a3b8?text=No+Image';
+            const title = car.title || `${car.year || ''} ${car.make || ''} ${car.model || ''}`.trim();
+            const vin = car.vin || '';
+            const site = car.base_site === 'iaai' ? 'IAAI' : 'COPART';
+
+            return `
+                <a href="lot.html?vin=${encodeURIComponent(vin)}" class="similar-lot-card">
+                    <img src="${img}" alt="${title}" class="similar-lot-img" loading="lazy">
+                    <div class="similar-lot-body">
+                        <div class="similar-lot-title">${title}</div>
+                        <div class="similar-lot-meta">${site} · ${car.location || car.state || ''}</div>
+                        <div class="similar-lot-price">${formatPrice(car.purchase_price ?? car.cost_priced)}</div>
+                    </div>
+                </a>`;
+        }
+
+        // ====== SALE STATUS PILL (punkt 3 listy) ======
+        function renderSaleStatus(rawStatus) {
+            const pill = document.getElementById('saleStatusPill');
+            const status = (rawStatus || '').toString().trim();
+
+            if (!status) {
+                pill.innerText = 'N/A';
+                pill.className = 'sale-status-pill';
+                return;
+            }
+
+            pill.innerText = status;
+            const s = status.toLowerCase();
+
+            if (s.includes('not sold')) {
+                pill.className = 'sale-status-pill status-not-sold';
+            } else if (s.includes('approval')) {
+                pill.className = 'sale-status-pill status-approval';
+            } else if (s.includes('sold')) {
+                pill.className = 'sale-status-pill status-sold';
+            } else {
+                pill.className = 'sale-status-pill';
+            }
+        }
+
+        // ====== KOLOROWANIE DOKUMENTU (punkt 4 listy) ======
+        // Statusy oznaczające pojazd de facto nienadający się do jazdy/rejestracji.
+        const DESTRUCTIVE_DOC_STATUSES = [
+            'non-registable',
+            'non registable',
+            'certificate of destruction',
+            'scrap',
+            'parts only'
+        ];
+
+        function applyDocumentColor(document_) {
+            const el = document.getElementById('specDoc');
+            const value = (document_ || '').toString().toLowerCase();
+            const isDestructive = DESTRUCTIVE_DOC_STATUSES.some(status => value.includes(status));
+            el.classList.toggle('doc-destructive', isDestructive);
+        }
+
+        // ====== KOLOROWANIE SPRZEDAWCY (punkt 4 listy) ======
+        function applySellerColor(sellerType) {
+            const el = document.getElementById('specSeller');
+            const value = (sellerType || '').toString().toLowerCase();
+            const isFlagged = value.includes('dealer') || value.includes('non-insurance') || value.includes('non insurance');
+            el.classList.toggle('seller-flagged', isFlagged);
+        }
+
+        function renderHistory(history) {
+            const tbody = document.getElementById('historyTableBody');
+            const countBadge = document.getElementById('historyCount');
+            countBadge.innerText = `Records found: ${history.length}`;
+
+            if (history.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#64748b;">No previous sale records found.</td></tr>';
+                return;
+            }
+
+            const sorted = [...history].sort((a, b) => new Date(b.sale_date) - new Date(a.sale_date));
+
+            tbody.innerHTML = sorted.map(entry => {
+                const entrySite = entry.base_site === 'iaai' ? 'IAAI' : 'COPART';
+                const priceClass = 'price-past';
+                return `
+                    <tr>
+                        <td>${formatDate(entry.sale_date)}</td>
+                        <td>${entrySite}</td>
+                        <td>${entry.sale_status || 'N/A'}</td>
+                        <td class="${priceClass}">${formatPrice(entry.purchase_price)}</td>
+                    </tr>`;
+            }).join('');
+        }
+
+        // ====== POBIERANIE ZDJĘĆ JAKO ZIP (punkt 2 listy) ======
+        // Uwaga: to rozwiązanie zależy od tego, czy serwer obrazków (CDN Copart/IAAI)
+        // wysyła nagłówki CORS pozwalające na fetch() z poziomu przeglądarki.
+        // Jeśli część zdjęć nie ma poprawnych nagłówków CORS, ich pobranie do ZIP-a
+        // się nie uda — taki plik jest wtedy pomijany, a na końcu pokazujemy,
+        // ile zdjęć faktycznie się udało spakować.
+        async function downloadAllPhotos() {
+            const btn = document.getElementById('downloadZipBtn');
+            if (!currentCarImages || currentCarImages.length === 0) return;
+            if (typeof JSZip === 'undefined') {
+                alert('ZIP library failed to load. Please check your internet connection and try again.');
+                return;
+            }
+
+            const originalLabel = btn.innerText;
+            btn.disabled = true;
+
+            const zip = new JSZip();
+            let successCount = 0;
+
+            for (let i = 0; i < currentCarImages.length; i++) {
+                btn.innerText = `Downloading ${i + 1}/${currentCarImages.length}...`;
+                const url = currentCarImages[i];
+                try {
+                    const res = await fetch(url);
+                    if (!res.ok) throw new Error(`status ${res.status}`);
+                    const blob = await res.blob();
+                    const ext = (url.split('.').pop() || 'jpg').split('?')[0].slice(0, 4) || 'jpg';
+                    zip.file(`photo_${String(i + 1).padStart(2, '0')}.${ext}`, blob);
+                    successCount++;
+                } catch (err) {
+                    console.warn(`Could not fetch image ${i + 1} for ZIP (likely CORS-blocked):`, err);
+                }
+            }
+
+            if (successCount === 0) {
+                alert('Sorry, none of the photos could be packaged into a ZIP (the image server may be blocking direct downloads). Try saving images individually instead.');
+                btn.disabled = false;
+                btn.innerText = originalLabel;
+                return;
+            }
+
+            try {
+                btn.innerText = 'Packaging ZIP...';
+                const content = await zip.generateAsync({ type: 'blob' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(content);
+                link.download = `${currentVin || 'vehicle'}_photos.zip`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(link.href);
+
+                if (successCount < currentCarImages.length) {
+                    alert(`${successCount} of ${currentCarImages.length} photos were packaged. Some images could not be downloaded due to server restrictions.`);
+                }
+            } catch (err) {
+                console.error('Failed to generate ZIP:', err);
+                alert('Failed to generate the ZIP file. Please try again.');
+            } finally {
+                btn.disabled = false;
+                btn.innerText = originalLabel;
+            }
+        }
+
+        // ====== BUDOWANIE GALERII: ZDJĘCIA + 360° + WIDEO ======
+        // Uwaga: dokładny format pól iaai_360 / copart_exterior_360 / video nie jest
+        // w 100% potwierdzony w dokumentacji (pojedynczy URL czy tablica URLi,
+        // strona z interaktywnym viewerem czy bezpośredni plik) — kod obsługuje
+        // oba warianty (string lub tablica). Jeśli po podłączeniu prawdziwego API
+        // coś nie zagra, sprawdź console.log(car) na żywym VIN-ie i popraw
+        // normalizeToArray/pole źródłowe poniżej.
+        function normalizeToArray(value) {
+            if (!value) return [];
+            if (Array.isArray(value)) return value.filter(Boolean);
+            return [value];
+        }
+
+        function buildGalleryItems(car) {
+            const items = [];
+            const hdImages = (car.link_img_hd && car.link_img_hd.length ? car.link_img_hd : car.link_img_small) || [];
+            const thumbImages = (car.link_img_small && car.link_img_small.length ? car.link_img_small : hdImages) || [];
+
+            hdImages.forEach((url, idx) => {
+                items.push({ type: 'image', url, thumb: thumbImages[idx] || url });
+            });
+
+            const fallbackThumb = thumbImages[0] || hdImages[0] || 'https://placehold.co/300x200/1e293b/94a3b8?text=360';
+
+            const spinUrls = [...normalizeToArray(car.iaai_360), ...normalizeToArray(car.copart_exterior_360)];
+            spinUrls.forEach(url => {
+                items.push({ type: '360', url, thumb: fallbackThumb });
+            });
+
+            const videoUrls = normalizeToArray(car.video);
+            videoUrls.forEach(url => {
+                items.push({ type: 'video', url, thumb: fallbackThumb });
+            });
+
+            if (items.length === 0) {
+                items.push({ type: 'image', url: 'https://placehold.co/1000x700/1e293b/94a3b8?text=No+Image', thumb: 'https://placehold.co/1000x700/1e293b/94a3b8?text=No+Image' });
+            }
+
+            return items;
+        }
+
+        function renderGallery() {
+            const item = galleryItems[currentIndex] || galleryItems[0];
+            const mainImage = document.getElementById('mainImage');
+            const mainFrame = document.getElementById('main360Frame');
+            const mainVideo = document.getElementById('mainVideo');
+            const openLink = document.getElementById('open360Link');
+            const watermark = document.querySelector('.main-image-container .img-watermark');
+
+            // Zatrzymaj odtwarzanie wideo przy przełączaniu na inny element
+            mainVideo.pause();
+
+            mainImage.style.display = 'none';
+            mainFrame.style.display = 'none';
+            mainFrame.src = '';
+            mainVideo.style.display = 'none';
+            mainVideo.src = '';
+            openLink.style.display = 'none';
+            watermark.style.display = 'block';
+
+            if (item.type === '360') {
+                mainFrame.src = item.url;
+                mainFrame.style.display = 'block';
+                watermark.style.display = 'none';
+                openLink.href = item.url;
+                openLink.style.display = 'inline-flex';
+            } else if (item.type === 'video') {
+                mainVideo.src = item.url;
+                mainVideo.style.display = 'block';
+                watermark.style.display = 'none';
+            } else {
+                mainImage.src = item.url;
+                mainImage.style.display = 'block';
+            }
+
+            const thumbsGrid = document.getElementById('thumbsGrid');
+            thumbsGrid.innerHTML = galleryItems.map((it, idx) => {
+                let badge = '';
+                if (it.type === '360') badge = '<span class="thumb-badge badge-360">360°</span>';
+                if (it.type === 'video') badge = '<span class="thumb-badge badge-video">▶ VIDEO</span>';
+                return `
+                    <div class="thumb ${idx === currentIndex ? 'active' : ''}" onclick="setImage(${idx})">
+                        <img src="${it.thumb}" alt="Thumbnail ${idx + 1}">
+                        ${badge}
+                        <img src="logo_2.png" alt="" class="img-watermark">
+                    </div>`;
+            }).join('');
+        }
+
+        function setImage(index) {
+            currentIndex = index;
+            renderGallery();
+        }
+
+        function nextImage() {
+            currentIndex = (currentIndex + 1) % galleryItems.length;
+            renderGallery();
+        }
+
+        function prevImage() {
+            currentIndex = (currentIndex - 1 + galleryItems.length) % galleryItems.length;
+            renderGallery();
+        }
+
+        /* MODAL LOGIC */
+        function openClaimModal() {
+            document.getElementById('claimModal').classList.add('active');
+            document.getElementById('acceptCheckbox').checked = false;
+            toggleNextButton();
+        }
+
+        function closeClaimModal() {
+            document.getElementById('claimModal').classList.remove('active');
+        }
+
+        function toggleNextButton() {
+            const checkbox = document.getElementById('acceptCheckbox');
+            const nextBtn = document.getElementById('nextStepBtn');
+            if (checkbox.checked) {
+                nextBtn.classList.remove('disabled');
+                nextBtn.removeAttribute('disabled');
+            } else {
+                nextBtn.classList.add('disabled');
+                nextBtn.setAttribute('disabled', 'true');
+            }
+        }
+
+        function handleNextStep() {
+            alert('Proceeding to the next step of claiming the lot.');
+            closeClaimModal();
+        }
+
+        /* ESCAPE KEY & OVERLAY CLICK TO CLOSE */
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeClaimModal();
+            }
+        });
+
+        function handleOverlayClick(event) {
+            if (event.target.id === 'claimModal') {
+                closeClaimModal();
+            }
+        }
+
+        initPage();
+    </script>
+</body>
+</html>
